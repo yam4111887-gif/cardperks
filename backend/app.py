@@ -5,20 +5,23 @@
     pip install -r requirements.txt
     python app.py            # http://localhost:8000 （/ 直接服務原型 index.html）
 """
+import hashlib
 import os
+import secrets
 import subprocess
 import sys
 import threading
 from datetime import date
 
-from fastapi import FastAPI, HTTPException, Query, Request
+from fastapi import FastAPI, Header, HTTPException, Query, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from models import Base, get_engine, Bank, Card, Merchant, MerchantLocation, Offer, User, UserCard
+from models import (Base, get_engine, Bank, Card, Merchant, MerchantLocation,
+                    Offer, User, UserCard, AuthToken)
 from seed import ensure_seed, load_approved, expire_offers
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))  # cardperks/
@@ -31,7 +34,11 @@ with engine.connect() as conn:
     cols = [r[1] for r in conn.execute(text("PRAGMA table_info(offers)"))]
     if "reward_note" not in cols:
         conn.execute(text("ALTER TABLE offers ADD COLUMN reward_note VARCHAR"))
-        conn.commit()
+    ucols = [r[1] for r in conn.execute(text("PRAGMA table_info(users)"))]
+    for col in ("password_hash", "display_name"):
+        if col not in ucols:
+            conn.execute(text(f"ALTER TABLE users ADD COLUMN {col} VARCHAR"))
+    conn.commit()
 
 app = FastAPI(title="CardPerks API", version="0.1.0")
 app.add_middleware(
@@ -152,14 +159,113 @@ def search(q: str = Query(..., min_length=1, description="商家名稱或別名�
         return {"query": q, "merchants": result}
 
 
-# ---------- 卡簿（示範單一使用者；正式版接 LINE Login / JWT） ----------
+# ---------- 帳號系統（email 註冊/登入＋token；正式版可再加 LINE Login） ----------
 
-@app.get("/api/me/cards")
-def my_cards():
+def _hash_password(password: str) -> str:
+    salt = secrets.token_hex(16)
+    digest = hashlib.pbkdf2_hmac("sha256", password.encode(), salt.encode(), 100_000).hex()
+    return f"{salt}${digest}"
+
+
+def _verify_password(password: str, stored: str) -> bool:
+    try:
+        salt, digest = stored.split("$", 1)
+    except ValueError:
+        return False
+    return secrets.compare_digest(
+        hashlib.pbkdf2_hmac("sha256", password.encode(), salt.encode(), 100_000).hex(),
+        digest)
+
+
+def _current_user(db: Session, authorization: str | None):
+    """Bearer token → User；無 token 回 None（呼叫端自行決定是否退回示範用戶）"""
+    if authorization and authorization.lower().startswith("bearer "):
+        token = authorization.split(" ", 1)[1].strip()
+        at = db.query(AuthToken).filter_by(token=token).first()
+        if at:
+            return db.query(User).get(at.user_id)
+    return None
+
+
+class AuthIn(BaseModel):
+    email: str
+    password: str
+
+
+@app.post("/api/auth/register")
+def register(body: AuthIn):
+    email = body.email.strip().lower()
+    if "@" not in email or len(body.password) < 6:
+        raise HTTPException(400, "email 格式錯誤或密碼至少 6 碼")
     with Session(engine) as db:
-        u = db.query(User).filter_by(email=DEMO_USER_EMAIL).first()
+        if db.query(User).filter_by(email=email).first():
+            raise HTTPException(409, "此 email 已註冊")
+        u = User(email=email, password_hash=_hash_password(body.password))
+        db.add(u)
+        db.flush()
+        token = secrets.token_urlsafe(32)
+        db.add(AuthToken(token=token, user_id=u.id))
+        db.commit()
+        return {"ok": True, "token": token, "email": email}
+
+
+@app.post("/api/auth/login")
+def login(body: AuthIn):
+    email = body.email.strip().lower()
+    with Session(engine) as db:
+        u = db.query(User).filter_by(email=email).first()
+        if not u or not u.password_hash or not _verify_password(body.password, u.password_hash):
+            raise HTTPException(401, "email 或密碼不正確")
+        token = secrets.token_urlsafe(32)
+        db.add(AuthToken(token=token, user_id=u.id))
+        db.commit()
+        return {"ok": True, "token": token, "email": email}
+
+
+@app.post("/api/auth/logout")
+def logout(authorization: str | None = Header(None)):
+    with Session(engine) as db:
+        u = _current_user(db, authorization)
         if not u:
-            return {"cards": []}
+            return {"ok": True}
+        if authorization.lower().startswith("bearer "):
+            token = authorization.split(" ", 1)[1].strip()
+            db.query(AuthToken).filter_by(token=token).delete()
+            db.commit()
+    return {"ok": True}
+
+
+@app.get("/api/me")
+def me(authorization: str | None = Header(None)):
+    with Session(engine) as db:
+        u = _current_user(db, authorization)
+        if not u:
+            return {"logged_in": False}
+        rows = db.execute(
+            select(Card).join(UserCard, UserCard.card_id == Card.id).where(UserCard.user_id == u.id)
+        ).scalars().all()
+        return {"logged_in": True, "email": u.email,
+                "cards": [card_to_dict(c) for c in rows]}
+
+
+# ---------- 卡簿（登入者用 Bearer token；未登入退回示範用戶，相容原型本地模式） ----------
+
+def _user_for_cards(db: Session, authorization: str | None) -> User:
+    u = _current_user(db, authorization)
+    if u:
+        return u
+    u = db.query(User).filter_by(email=DEMO_USER_EMAIL).first()
+    if not u:
+        u = User(email=DEMO_USER_EMAIL)
+        db.add(u)
+        db.commit()
+    return u
+
+
+@app.get("/api/me/cardwallet")
+def my_cards(authorization: str | None = Header(None)):
+    with Session(engine) as db:
+        u = _user_for_cards(db, authorization)
         rows = db.execute(
             select(Card).join(UserCard, UserCard.card_id == Card.id).where(UserCard.user_id == u.id)
         ).scalars().all()
@@ -171,9 +277,9 @@ class CardIn(BaseModel):
 
 
 @app.post("/api/me/cards")
-def add_my_card(body: CardIn):
+def add_my_card(body: CardIn, authorization: str | None = Header(None)):
     with Session(engine) as db:
-        u = db.query(User).filter_by(email=DEMO_USER_EMAIL).first()
+        u = _user_for_cards(db, authorization)
         c = db.query(Card).filter_by(slug=body.card_slug).first()
         if not c:
             raise HTTPException(404, "card not found")
@@ -185,9 +291,9 @@ def add_my_card(body: CardIn):
 
 
 @app.delete("/api/me/cards/{card_slug}")
-def remove_my_card(card_slug: str):
+def remove_my_card(card_slug: str, authorization: str | None = Header(None)):
     with Session(engine) as db:
-        u = db.query(User).filter_by(email=DEMO_USER_EMAIL).first()
+        u = _user_for_cards(db, authorization)
         c = db.query(Card).filter_by(slug=card_slug).first()
         if not c:
             raise HTTPException(404, "card not found")

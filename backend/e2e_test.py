@@ -212,6 +212,30 @@ def run():
         page.wait_for_timeout(1500)
         check("移除後持久化", page.locator("#view-cards .offerrow").count() == after)
 
+        # ---------- 13b. 帳號：註冊 → 雲端同步 → 登出 ----------
+        import random as _rnd
+        em = f"e2e_{_rnd.randint(100000, 999999)}@test.local"
+        page.click("#userBtn")
+        page.wait_for_timeout(300)
+        page.fill("#accEmail", em)
+        page.fill("#accPw", "secret123")
+        page.click("text=註冊新帳號")
+        page.wait_for_timeout(900)
+        check("註冊成功並提示雲端同步", page.locator("text=卡簿已雲端同步").count() >= 1)
+
+        before = page.locator("#view-cards .offerrow").count()
+        page.reload()
+        page.wait_for_timeout(1800)
+        after = page.locator("#view-cards .offerrow").count()
+        check("重載後雲端卡簿同步", after == before, f"{before}->{after}")
+
+        page.click("#userBtn")
+        page.wait_for_timeout(300)
+        page.click("text=登出")
+        page.wait_for_timeout(400)
+        check("登出清除 token（回本地模式）",
+              page.evaluate("localStorage.getItem('cp_token')") is None)
+
         # ---------- 14. 無 JS 錯誤 ----------
         check("全程無 pageerror", len(errors) == 0, f"errors={errors[:2]}")
 

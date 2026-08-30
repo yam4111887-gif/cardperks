@@ -80,6 +80,15 @@ class User(Base):
     __tablename__ = "users"
     id = Column(Integer, primary_key=True, autoincrement=True)
     email = Column(String, unique=True)
+    password_hash = Column(String)   # salt$pbkdf2 hex；示範用戶為 NULL（不可登入）
+    display_name = Column(String)
+
+
+class AuthToken(Base):
+    __tablename__ = "auth_tokens"
+    token = Column(String, primary_key=True)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    created_at = Column(DateTime, default=datetime.utcnow)
 
 
 class UserCard(Base):
