@@ -53,6 +53,8 @@ BANK_SOURCES = [
     {"bank": "hsbc", "name": "滙豐銀行", "url": "https://shop.hsbc.com.tw/"},
     {"bank": "sinopac", "name": "永豐銀行",
      "url": "https://bank.sinopac.com/sinopacBT/personal/credit-card/discount/list.html"},
+    {"bank": "feib", "name": "遠東商銀", "url": "https://www.feib.com.tw/activity?id=1980"},  # 快樂信用卡優惠
+    {"bank": "ubot", "name": "聯邦銀行", "url": "https://card.ubot.com.tw/"},
     # 台新：robots.txt 連線失敗（本地環境連不上），部署到台灣主機後再啟用
     # {"bank": "taishin", "name": "台新銀行", "url": "https://card.taishinbank.com.tw/TSDIB1C_11/"},
 ]
@@ -151,6 +153,17 @@ def crawl(banks_filter, link_limit, details_n, dry_run, max_pages=3):
                     break
 
             print(f"       收集 {len(items)} 條活動連結")
+
+            # 總覽型活動頁（正文本身就是優惠內容，例如遠東 activity?id=1980）：
+            # 無論是否收集到連結，來源頁主內容一律保存一份供解析
+            if items:
+                self_text = clean_text(soup.get_text("\n"), 6000)
+                if len(self_text) > 200:
+                    items.insert(0, {"bank": src["bank"], "bank_name": src["name"],
+                                     "title": soup.title.get_text(strip=True) if soup.title else src["name"],
+                                     "url": src["url"], "detail_text": self_text,
+                                     "fetched_at": datetime.now(timezone.utc).isoformat(),
+                                     "page_url": src["url"]})
 
             # 「一覽表」型頁面（優惠直接列在頁面上，無活動連結）：
             # 把頁面主內容當作一條待解析項目，並跟隨分頁（navigation-N-pageLink）
