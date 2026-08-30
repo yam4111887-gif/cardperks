@@ -1,0 +1,7 @@
+backend/cardperks.db
+backend/pipeline/out/
+backend/_*.json
+backend/_server.log
+**/__pycache__/
+**/*.pyc
+.git/

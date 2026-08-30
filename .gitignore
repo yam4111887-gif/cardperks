@@ -1,0 +1,11 @@
+# 資料與產物
+backend/cardperks.db
+backend/_*.json
+backend/_server.log
+backend/pipeline/out/
+**/__pycache__/
+**/*.pyc
+
+# 機密（永不上傳）
+.env
+*.pem

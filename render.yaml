@@ -1,0 +1,25 @@
+# Render 一鍵部署藍圖：repo 推上 GitHub 後，Render → New → Blueprint 即自動設定
+services:
+  - type: web
+    name: cardperks
+    runtime: docker        # 用 Dockerfile（含 Playwright 爬蟲環境）
+    plan: starter          # 免費版請改 free（注意：512MB 爬蟲易 OOM、會休眠）
+    envVars:
+      - key: DATABASE_URL  # 填 Supabase 連線字串（同步值，不在 repo 內）
+        sync: false
+      - key: CRON_SECRET   # 自訂密語，排程觸發 /api/tasks/daily 用
+        sync: false
+      - key: LLM_PROVIDER
+        value: glm
+      - key: LLM_API_KEY   # bigmodel.cn 的 API key（選填）
+        sync: false
+
+  - type: cron             # 每日 08:00（UTC 00:00）跑資料管線
+    name: cardperks-daily
+    runtime: docker
+    plan: starter
+    schedule: "0 0 * * *"
+    dockerCommand: python pipeline/daily.py
+    envVars:
+      - key: DATABASE_URL
+        sync: false

@@ -1,0 +1,1233 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>卡優惠 CardPerks — 互動原型</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<style>
+  :root {
+    --ink: #1e293b;
+    --sub: #64748b;
+    --line: #e2e8f0;
+    --bg: #f4f5fa;
+    --brand: #4f46e5;
+    --brand2: #7c3aed;
+    --ok: #059669;
+    --warn: #d97706;
+    --danger: #e11d48;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; }
+  body {
+    font-family: "PingFang TC", "Microsoft JhengHei", system-ui, -apple-system, sans-serif;
+    background: #23233a; color: var(--ink);
+    display: flex; justify-content: center; align-items: stretch;
+  }
+  .phone {
+    width: 100%; max-width: 430px; height: 100dvh;
+    background: var(--bg); display: flex; flex-direction: column;
+    overflow: hidden; position: relative;
+  }
+  @media (min-width: 480px) {
+    body { padding: 18px 0; }
+    .phone { height: min(880px, calc(100dvh - 36px)); border-radius: 28px; box-shadow: 0 24px 60px rgba(0,0,0,.45); border: 1px solid #3a3a55; }
+  }
+
+  /* ---------- Header ---------- */
+  header {
+    background: linear-gradient(120deg, var(--brand), var(--brand2));
+    color: #fff; padding: 14px 16px 12px; flex: none; z-index: 30;
+  }
+  .hd-row { display: flex; align-items: center; gap: 8px; }
+  .logo { font-size: 19px; font-weight: 800; letter-spacing: .5px; }
+  .logo small { font-weight: 500; opacity: .75; font-size: 11px; margin-left: 6px; }
+  .pro-chip {
+    background: linear-gradient(90deg,#fbbf24,#f59e0b); color: #451a03;
+    font-size: 10px; font-weight: 800; border-radius: 999px; padding: 3px 8px; display: none;
+  }
+  .pro-chip.on { display: inline-block; }
+  .hd-spacer { flex: 1; }
+  .bell {
+    background: rgba(255,255,255,.18); border: none; color: #fff; font-size: 16px;
+    width: 34px; height: 34px; border-radius: 10px; cursor: pointer; position: relative;
+  }
+  .bell .dot {
+    position: absolute; top: 5px; right: 6px; width: 8px; height: 8px; border-radius: 50%;
+    background: #f87171; border: 2px solid transparent; box-shadow: 0 0 0 2px rgba(79,70,229,.9);
+  }
+  .seg {
+    margin-top: 12px; background: rgba(255,255,255,.16); border-radius: 12px;
+    display: flex; padding: 3px; font-size: 13px;
+  }
+  .seg button {
+    flex: 1; border: none; background: transparent; color: #e0e7ff;
+    padding: 7px 0; border-radius: 10px; cursor: pointer; font-weight: 600; transition: .15s;
+  }
+  .seg button.on { background: #fff; color: var(--brand); box-shadow: 0 2px 6px rgba(0,0,0,.18); }
+
+  /* ---------- Main ---------- */
+  main { flex: 1; overflow-y: auto; padding: 14px 14px 20px; }
+  .view { display: none; animation: fade .18s ease; }
+  .view.on { display: block; }
+  @keyframes fade { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+  .note {
+    background: #eef2ff; border: 1px dashed #c7d2fe; color: #4338ca;
+    border-radius: 12px; padding: 8px 12px; font-size: 12px; margin-bottom: 12px; line-height: 1.5;
+  }
+  .disc { color: var(--sub); font-size: 10.5px; text-align: center; margin-top: 14px; line-height: 1.6; }
+
+  /* ---------- Bottom nav ---------- */
+  nav {
+    flex: none; display: flex; background: #fff; border-top: 1px solid var(--line);
+    padding: 6px 4px calc(8px + env(safe-area-inset-bottom)); z-index: 30;
+  }
+  nav button {
+    flex: 1; border: none; background: none; color: var(--sub);
+    font-size: 10.5px; display: flex; flex-direction: column; align-items: center; gap: 3px;
+    cursor: pointer; padding: 4px 0; border-radius: 10px;
+  }
+  nav button .ico { line-height: 1; }
+  nav button .ico svg { width: 22px; height: 22px; display: block; margin: 0 auto; }
+  nav button.on { color: var(--brand); font-weight: 700; }
+  .bell svg { width: 17px; height: 17px; vertical-align: -3px; }
+  .lico { display: inline-flex; vertical-align: -2px; margin-right: 5px; }
+  .lico svg { width: 15px; height: 15px; }
+
+  /* ---------- Cards / tiles ---------- */
+  .panel { background: #fff; border: 1px solid var(--line); border-radius: 16px; padding: 14px; margin-bottom: 12px; }
+  .panel h3 { font-size: 15px; margin-bottom: 10px; }
+  .muted { color: var(--sub); font-size: 12px; }
+  .row { display: flex; align-items: center; gap: 10px; }
+
+  .cardtile {
+    width: 52px; height: 34px; border-radius: 8px; flex: none;
+    display: flex; align-items: center; justify-content: center;
+    color: #fff; font-size: 10.5px; font-weight: 800; letter-spacing: .5px;
+    box-shadow: inset 0 0 0 1px rgba(255,255,255,.25);
+  }
+  .bankname { font-size: 11px; color: var(--sub); }
+  .cardtitle { font-weight: 700; font-size: 14px; }
+
+  .offerrow {
+    background: #fff; border: 1px solid var(--line); border-radius: 14px;
+    padding: 12px; margin-bottom: 10px;
+  }
+  .ratebadge {
+    background: #ecfdf5; color: var(--ok); border: 1px solid #a7f3d0;
+    font-weight: 800; font-size: 13px; border-radius: 8px; padding: 3px 8px; white-space: nowrap;
+  }
+  .paytag {
+    display: inline-block; background: #fef3c7; color: #92400e; border: 1px solid #fde68a;
+    font-size: 10.5px; border-radius: 999px; padding: 2px 8px; margin-right: 4px;
+  }
+  .tag {
+    display: inline-block; font-size: 10.5px; border-radius: 999px; padding: 2px 8px; margin-right: 4px;
+    background: #f1f5f9; color: var(--sub);
+  }
+  .have { color: var(--ok); font-size: 11px; font-weight: 700; }
+  .nothave { color: var(--sub); font-size: 11px; }
+  .est { font-size: 12px; color: var(--ink); }
+  .est b { color: var(--brand); font-size: 14px; }
+  .btn {
+    border: none; border-radius: 10px; padding: 8px 14px; font-size: 12.5px; font-weight: 700;
+    cursor: pointer; background: var(--brand); color: #fff;
+  }
+  .btn.ghost { background: #eef2ff; color: var(--brand); }
+  .btn.gray { background: #f1f5f9; color: var(--sub); }
+  .btn.block { width: 100%; padding: 12px; font-size: 14px; }
+  .btn.warn { background: var(--warn); }
+  .xbtn { border: none; background: #f1f5f9; color: var(--sub); border-radius: 8px; width: 26px; height: 26px; cursor: pointer; font-size: 13px; flex: none; }
+
+  .chips { display: flex; gap: 8px; flex-wrap: wrap; margin: 10px 0; }
+  .chip {
+    border: 1px solid var(--line); background: #fff; color: var(--sub);
+    border-radius: 999px; padding: 6px 12px; font-size: 12px; cursor: pointer;
+  }
+  .chip.on { background: var(--brand); border-color: var(--brand); color: #fff; font-weight: 700; }
+
+  .searchbar { display: flex; gap: 8px; }
+  .searchbar input[type=text] {
+    flex: 1; border: 1px solid var(--line); border-radius: 12px; padding: 11px 12px; font-size: 14px; outline: none;
+  }
+  .searchbar input[type=text]:focus { border-color: var(--brand); }
+  .amtrow { display: flex; align-items: center; gap: 8px; margin-top: 10px; font-size: 12.5px; color: var(--sub); }
+  .amtrow input {
+    width: 90px; border: 1px solid var(--line); border-radius: 10px; padding: 8px 10px; font-size: 14px; outline: none;
+  }
+
+  .merchant-head { display:flex; align-items:center; gap:8px; margin: 14px 2px 8px; font-weight: 800; font-size: 14px; }
+  .merchant-head .cnt { font-size: 11px; color: var(--sub); font-weight: 500; }
+
+  /* ---------- Progress (free quota) ---------- */
+  .quota { margin-bottom: 4px; }
+  .bar { height: 7px; background: #e2e8f0; border-radius: 99px; overflow: hidden; margin-top: 6px; }
+  .bar i { display: block; height: 100%; background: linear-gradient(90deg, var(--brand), var(--brand2)); border-radius: 99px; }
+
+  /* ---------- Map ---------- */
+  #map { height: 340px; border-radius: 16px; border: 1px solid var(--line); z-index: 1; }
+  .maplegend { font-size: 11px; color: var(--sub); margin-top: 8px; line-height: 1.6; }
+  .pin {
+    background: var(--brand); color: #fff; font-size: 11px; font-weight: 800;
+    border-radius: 999px 999px 999px 2px; padding: 5px 9px; transform: rotate(-2deg);
+    box-shadow: 0 3px 8px rgba(79,70,229,.4); border: 2px solid #fff; text-align: center; white-space: nowrap;
+  }
+  .pop-offer { border-top: 1px solid var(--line); padding: 7px 0; font-size: 12px; }
+  .pop-offer:first-of-type { border-top: none; }
+  .leaflet-popup-content { font-family: inherit; margin: 10px 12px; }
+
+  /* ---------- Pro page ---------- */
+  .pricehero {
+    background: linear-gradient(120deg,#1e1b4b,#4c1d95); color:#fff; border-radius: 18px;
+    padding: 18px; text-align: center; margin-bottom: 12px;
+  }
+  .pricehero .plan { font-size: 13px; opacity: .8; }
+  .pricehero .price { font-size: 34px; font-weight: 800; margin: 6px 0 2px; }
+  .pricehero .per { font-size: 12px; opacity: .75; }
+  table.cmp { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+  table.cmp th, table.cmp td { padding: 9px 6px; text-align: center; border-bottom: 1px solid var(--line); }
+  table.cmp th:first-child, table.cmp td:first-child { text-align: left; color: var(--sub); }
+  table.cmp .yes { color: var(--ok); font-weight: 800; }
+  table.cmp .no { color: #cbd5e1; }
+  table.cmp td:nth-child(3) { background: #f5f3ff; font-weight: 700; }
+
+  /* ---------- Modal / toast ---------- */
+  #modal-root { position: absolute; inset: 0; z-index: 50; display: none; }
+  #modal-root.on { display: block; }
+  .mask { position: absolute; inset: 0; background: rgba(15,23,42,.55); }
+  .sheet {
+    position: absolute; left: 0; right: 0; bottom: 0; background: #fff;
+    border-radius: 22px 22px 0 0; padding: 18px 16px calc(20px + env(safe-area-inset-bottom));
+    max-height: 82%; overflow-y: auto; animation: up .22s ease;
+  }
+  @keyframes up { from { transform: translateY(40px); opacity: .4; } to { transform: none; opacity: 1; } }
+  .sheet h3 { font-size: 16px; margin-bottom: 4px; }
+  .sheet .sub { font-size: 12px; color: var(--sub); margin-bottom: 12px; }
+  .listitem {
+    display: flex; align-items: center; gap: 10px; padding: 11px 4px; border-bottom: 1px solid var(--line);
+  }
+  .listitem:last-child { border-bottom: none; }
+  .payhero { background: linear-gradient(120deg,#4c1d95,#7c3aed); border-radius: 16px; color: #fff; padding: 16px; margin-bottom: 12px; }
+  .payhero h3 { color: #fff; }
+  .payhero ul { margin: 10px 0 0 18px; font-size: 13px; line-height: 1.9; }
+  .toast {
+    position: absolute; left: 50%; bottom: 92px; transform: translateX(-50%);
+    background: #1e293b; color: #fff; font-size: 12.5px; border-radius: 999px;
+    padding: 10px 18px; opacity: 0; pointer-events: none; transition: .25s; z-index: 60; white-space: nowrap; max-width: 92%;
+  }
+  .toast.on { opacity: .96; }
+  .lockrow { filter: blur(3px); pointer-events: none; user-select: none; }
+  .empty { text-align: center; color: var(--sub); font-size: 13px; padding: 26px 10px; line-height: 1.8; }
+  .days { font-size: 11px; color: var(--warn); font-weight: 700; }
+  .daysover { font-size: 11px; color: var(--danger); font-weight: 700; }
+  .legalinks { text-align: center; font-size: 12px; margin-top: 6px; }
+  .legalinks button {
+    background: none; border: none; color: var(--brand); cursor: pointer;
+    font-size: 12px; padding: 4px 6px; text-decoration: underline;
+  }
+  .legalbody { font-size: 12.5px; line-height: 1.8; color: var(--ink); max-height: 52vh; overflow-y: auto; padding-right: 6px; }
+  .legalbody h4 { font-size: 13px; margin: 12px 0 4px; color: var(--brand); }
+  .legalbody p, .legalbody li { color: var(--sub); }
+  .legalbody ul { margin-left: 18px; }
+  .consentbox {
+    border: 1px solid var(--line); border-radius: 12px; padding: 12px;
+    background: #f8fafc; font-size: 12.5px; color: var(--sub); line-height: 1.8; margin: 10px 0;
+  }
+  .consentbox label { display: flex; gap: 8px; align-items: flex-start; cursor: pointer; color: var(--ink); font-weight: 600; }
+  .consentbox input { margin-top: 4px; }
+  .srclink { font-size: 11px; color: var(--brand); text-decoration: none; white-space: nowrap; }
+  .srclink:hover { text-decoration: underline; }
+  .badge-live { background: #d1fae5; color: #065f46; border: 1px solid #a7f3d0; font-size: 10px; border-radius: 999px; padding: 2px 8px; font-weight: 700; }
+
+  /* ---------- 引導頁 ---------- */
+  #onboard {
+    position: absolute; inset: 0; z-index: 70; display: none;
+    background: linear-gradient(150deg, #312e81, #6d28d9 55%, #a21caf);
+    color: #fff; flex-direction: column; padding: 18px 22px calc(16px + env(safe-area-inset-bottom));
+  }
+  #onboard.on { display: flex; animation: fade .25s ease; }
+  .ob-top { display: flex; justify-content: flex-end; }
+  .ob-skip {
+    background: rgba(255,255,255,.16); border: none; color: #e0e7ff;
+    border-radius: 999px; padding: 7px 16px; font-size: 12.5px; cursor: pointer;
+  }
+  .ob-hero { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; gap: 6px; }
+  .ob-icon {
+    width: 88px; height: 88px; border-radius: 26px; background: rgba(255,255,255,.14);
+    display: flex; align-items: center; justify-content: center; margin-bottom: 12px;
+    box-shadow: 0 14px 34px rgba(0,0,0,.28);
+  }
+  .ob-icon svg { width: 42px; height: 42px; }
+  .ob-hero h2 { font-size: 23px; font-weight: 800; letter-spacing: .5px; }
+  .ob-hero p { font-size: 13.5px; line-height: 1.9; opacity: .88; max-width: 290px; }
+  .ob-hero .hint { font-size: 12px; opacity: .65; margin-top: 10px; }
+  .ob-dots { display: flex; gap: 6px; justify-content: center; margin: 4px 0 14px; }
+  .ob-dots i { width: 7px; height: 7px; border-radius: 99px; background: rgba(255,255,255,.32); transition: .2s; }
+  .ob-dots i.on { background: #fff; width: 20px; }
+  #onboard .btn-w {
+    background: #fff; color: var(--brand); border: none; border-radius: 14px;
+    padding: 14px; font-size: 15px; font-weight: 800; width: 100%; cursor: pointer;
+    box-shadow: 0 10px 24px rgba(0,0,0,.25);
+  }
+  #onboard .btn-w:disabled { opacity: .45; box-shadow: none; cursor: not-allowed; }
+  #onboard .btn-w.ghost { background: rgba(255,255,255,.12); color: #fff; box-shadow: none; margin-top: 9px; }
+  .ob-pickwrap { flex: 1; display: flex; flex-direction: column; overflow-y: auto; }
+  .ob-pickhead { text-align: center; margin: 6px 0 12px; }
+  .ob-pickhead h2 { font-size: 20px; }
+  .ob-pickhead p { font-size: 12.5px; opacity: .8; margin-top: 4px; }
+  .pickgrid { display: flex; flex-wrap: wrap; gap: 9px; justify-content: center; padding: 0 2px; }
+  .pick {
+    border: 1.5px solid rgba(255,255,255,.35); background: rgba(255,255,255,.09); color: #fff;
+    border-radius: 12px; padding: 10px 13px; font-size: 12.5px; cursor: pointer; display: flex; align-items: center; gap: 7px;
+  }
+  .pick .cardtile { width: 40px; height: 26px; font-size: 9px; }
+  .pick.on { background: #fff; color: var(--brand); font-weight: 700; border-color: #fff; }
+  .pick.on .cardtile { box-shadow: none; outline: 2px solid var(--brand); }
+  .hd-help {
+    background: rgba(255,255,255,.18); border: none; color: #fff; font-size: 13px; font-weight: 800;
+    width: 34px; height: 34px; border-radius: 10px; cursor: pointer;
+  }
+  .linklike { background: none; border: none; color: var(--brand); text-decoration: underline; cursor: pointer; font-size: inherit; padding: 0; }
+</style>
+</head>
+<body>
+<div class="phone" id="phone">
+  <header>
+    <div class="hd-row">
+      <span class="logo">卡優惠<small>CardPerks · 原型</small></span>
+      <span class="pro-chip" id="proChip">PRO</span>
+      <span class="hd-spacer"></span>
+      <button class="hd-help" id="helpBtn" aria-label="引導">？</button>
+      <button class="bell" id="bellBtn" aria-label="提醒"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg><span class="dot"></span></button>
+    </div>
+    <div class="seg" id="segToggle">
+      <button data-mode="mine" class="on">只看我的卡</button>
+      <button data-mode="all">顯示全部卡</button>
+    </div>
+  </header>
+
+  <main id="main">
+    <!-- 卡簿 -->
+    <section class="view on" id="view-cards"></section>
+    <!-- 搜尋 -->
+    <section class="view" id="view-search"></section>
+    <!-- 地圖 -->
+    <section class="view" id="view-map"></section>
+    <!-- 優惠 -->
+    <section class="view" id="view-offers"></section>
+    <!-- Pro -->
+    <section class="view" id="view-pro"></section>
+  </main>
+
+  <nav id="nav">
+    <button data-v="cards" class="on"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg></span>卡簿</button>
+    <button data-v="search"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></span>搜尋</button>
+    <button data-v="map"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></span>地圖</button>
+    <button data-v="offers"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="8" width="18" height="4" rx="1"/><line x1="12" y1="8" x2="12" y2="21"/><path d="M19 12v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-7"/><path d="M7.5 8a2.5 2.5 0 0 1 0-5C11 3 12 8 12 8s1-5 4.5-5a2.5 2.5 0 0 1 0 5"/></svg></span>優惠</button>
+    <button data-v="pro"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26"/></svg></span>Pro</button>
+  </nav>
+
+  <div id="modal-root"></div>
+  <div class="toast" id="toast"></div>
+  <div id="onboard"></div>
+</div>
+
+<script>
+/* =========================================================
+   卡優惠 CardPerks — 單檔互動原型
+   所有銀行／卡片／優惠資料皆為「示範資料」，非即時資訊。
+   ========================================================= */
+
+// 內容區塊用線條圖示（Lucide 風格）
+const I = {
+  card: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>',
+  bell: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>',
+  file: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>',
+  spark: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.9 5.8a2 2 0 0 0 1.3 1.3L21 12l-5.8 1.9a2 2 0 0 0-1.3 1.3L12 21l-1.9-5.8a2 2 0 0 0-1.3-1.3L3 12l5.8-1.9a2 2 0 0 0 1.3-1.3z"/></svg>',
+  pin: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>',
+  cal: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>',
+  inf: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18.178 8c5.096 0 5.096 8 0 8-5.095 0-7.133-8-12.739-8-4.585 0-4.585 8 0 8 5.606 0 7.644-8 12.74-8z"/></svg>',
+};
+const li = (icon, txt) => `<li><span class="lico">${icon}</span>${txt}</li>`;
+
+// ---------- 示範資料 ----------
+const BANKS = {
+  taishin: { name: '台新銀行', short: '台新', grad: ['#e11d48', '#fb7185'] },
+  cathay:  { name: '國泰世華', short: '國泰', grad: ['#0284c7', '#38bdf8'] },
+  esun:    { name: '玉山銀行', short: '玉山', grad: ['#15803d', '#4ade80'] },
+  fubon:   { name: '富邦銀行', short: '富邦', grad: ['#7c3aed', '#a78bfa'] },
+  sinopac: { name: '永豐銀行', short: '永豐', grad: ['#d97706', '#fbbf24'] },
+  ctbc:    { name: '中國信託', short: '中信', grad: ['#0e7490', '#22d3ee'] },
+  tfb:     { name: '台北富邦', short: '北富邦', grad: ['#db2777', '#f472b6'] },
+};
+
+const CARDS = [
+  { id: 'gogo',   bank: 'taishin', name: '@GoGo icash 聯名卡',   base: '一般 1%．數位帳戶加碼' },
+  { id: 'cube',   bank: 'cathay',  name: 'CUBE 卡',              base: 'App 切換方案最高 3.3%' },
+  { id: 'ubear',  bank: 'esun',    name: 'U Bear 卡',            base: '一般 1%．網購/行動支付加碼' },
+  { id: 'pi',     bank: 'esun',    name: 'Pi 拍錢包信用卡',       base: 'Pi 支付 4.5% 起跳' },
+  { id: 'jcard',  bank: 'fubon',   name: 'J 卡',                 base: '國內 1% 無上限' },
+  { id: 'dabao',  bank: 'sinopac', name: '幣倍卡',               base: '指定數位通路 3%' },
+  { id: 'linect', bank: 'ctbc',    name: 'LINE Pay 信用卡',      base: 'LINE Pay 一般 2.8%' },
+  { id: 'momoca', bank: 'tfb',     name: 'momo 聯名卡',          base: 'momo 網購 5%（有上限）' },
+];
+
+const MERCHANTS = [
+  { id: 'pxmart', name: '全聯福利中心', cat: '超市', online: false, alias: '全聯 pxmart',
+    locs: [{ n: '南京建國店', lat: 25.0522, lng: 121.5470 }, { n: '信義莊敬店', lat: 25.0337, lng: 121.5605 }] },
+  { id: 'seven',  name: '7-ELEVEN', cat: '超商', online: false, alias: '7-11 統一超商',
+    locs: [{ n: '市府門市', lat: 25.0406, lng: 121.5645 }] },
+  { id: 'family', name: '全家便利商店', cat: '超商', online: false, alias: '全家 okmart',
+    locs: [{ n: '統領店', lat: 25.0443, lng: 121.5438 }] },
+  { id: 'carr',   name: '家樂福', cat: '量販', online: false, alias: 'carrefour',
+    locs: [{ n: '桂林店', lat: 25.0330, lng: 121.5060 }] },
+  { id: 'momo',   name: 'momo 購物網', cat: '網購', online: true, alias: 'momo', locs: [] },
+  { id: 'pchome', name: 'PChome 24h', cat: '網購', online: true, alias: 'pchome', locs: [] },
+  { id: 'fpanda', name: 'foodpanda', cat: '外送', online: true, alias: '熊貓 foodpanda', locs: [] },
+  { id: 'ueats',  name: 'Uber Eats', cat: '外送', online: true, alias: 'uber eats 優食', locs: [] },
+  { id: 'gas',    name: '全國加油站', cat: '加油', online: false, alias: '加油站',
+    locs: [{ n: '民權站', lat: 25.0610, lng: 121.5210 }] },
+  { id: 'vie',    name: '威秀影城', cat: '娛樂', online: false, alias: '威秀 電影 vieshow',
+    locs: [{ n: '信義威秀', lat: 25.0341, lng: 121.5655 }] },
+  { id: 'waca',   name: '瓦城泰國料理', cat: '餐廳', online: false, alias: '瓦城 thai town',
+    locs: [{ n: '統一時代店', lat: 25.0449, lng: 121.5646 }] },
+];
+
+// pay: 綁定支付方式；login: 需登錄；cap: 月回饋上限
+const OFFERS = [
+  { card: 'ubear',  m: 'pxmart', rate: 3.8, cap: 300,  login: true,  pay: '不限',   end: '2026-08-31', note: '限指定門市' },
+  { card: 'cube',   m: 'pxmart', rate: 5.0, cap: 200,  login: true,  pay: '不限',   end: '2026-08-20', note: '需於國泰 App 登錄' },
+  { card: 'linect', m: 'pxmart', rate: 2.8, cap: 0,    login: false, pay: 'LINE Pay', end: '2026-09-30', note: '' },
+  { card: 'pi',     m: 'seven',  rate: 4.5, cap: 200,  login: false, pay: 'Pi 拍錢包', end: '2026-08-31', note: '' },
+  { card: 'gogo',   m: 'seven',  rate: 3.8, cap: 300,  login: true,  pay: '行動支付', end: '2026-08-31', note: '限定行動支付' },
+  { card: 'gogo',   m: 'family', rate: 3.8, cap: 300,  login: true,  pay: '行動支付', end: '2026-08-31', note: '限定行動支付' },
+  { card: 'dabao',  m: 'family', rate: 3.0, cap: 0,    login: false, pay: '不限',   end: '2026-09-30', note: '數位帳戶戶加碼' },
+  { card: 'cube',   m: 'carr',   rate: 5.0, cap: 300,  login: true,  pay: '不限',   end: '2026-08-31', note: '需於國泰 App 登錄' },
+  { card: 'momoca', m: 'momo',   rate: 5.0, cap: 500,  login: false, pay: '不限',   end: '2026-09-30', note: 'momo 會員限定' },
+  { card: 'ubear',  m: 'momo',   rate: 3.8, cap: 300,  login: false, pay: '不限',   end: '2026-08-31', note: '' },
+  { card: 'ubear',  m: 'pchome', rate: 3.8, cap: 300,  login: false, pay: '不限',   end: '2026-08-31', note: '' },
+  { card: 'gogo',   m: 'pchome', rate: 3.8, cap: 300,  login: true,  pay: '不限',   end: '2026-08-31', note: '' },
+  { card: 'gogo',   m: 'fpanda', rate: 3.8, cap: 300,  login: true,  pay: '不限',   end: '2026-08-31', note: '外送平台加碼' },
+  { card: 'cube',   m: 'fpanda', rate: 3.3, cap: 0,    login: false, pay: '不限',   end: '2026-08-31', note: '美食外送方案' },
+  { card: 'linect', m: 'ueats',  rate: 3.5, cap: 0,    login: false, pay: 'LINE Pay', end: '2026-09-30', note: '' },
+  { card: 'ubear',  m: 'ueats',  rate: 3.8, cap: 300,  login: false, pay: '不限',   end: '2026-08-31', note: '' },
+  { card: 'jcard',  m: 'gas',    rate: 1.0, cap: 0,    login: false, pay: '不限',   end: '2026-12-31', note: '基本回饋' },
+  { card: 'dabao',  m: 'gas',    rate: 3.0, cap: 300,  login: false, pay: '不限',   end: '2026-09-30', note: '' },
+  { card: 'cube',   m: 'vie',    rate: 5.0, cap: 300,  login: true,  pay: '不限',   end: '2026-08-31', note: '影音娛樂方案' },
+  { card: 'jcard',  m: 'vie',    rate: 1.0, cap: 0,    login: false, pay: '不限',   end: '2026-12-31', note: '基本回饋' },
+  { card: 'cube',   m: 'waca',   rate: 5.0, cap: 300,  login: true,  pay: '不限',   end: '2026-08-31', note: '精選餐廳方案' },
+  { card: 'linect', m: 'waca',   rate: 3.5, cap: 0,    login: false, pay: 'LINE Pay', end: '2026-09-30', note: '' },
+  { card: 'pi',     m: 'waca',   rate: 4.5, cap: 200,  login: false, pay: 'Pi 拍錢包', end: '2026-08-31', note: '' },
+];
+
+const REMINDERS = [
+  { t: 'offer_expiry', msg: '玉山 U Bear「網購 3.8%」將於 8/31 到期，本月額度已用 $180/$300' },
+  { t: 'login_needed', msg: '國泰 CUBE「全聯 5%」需於 8/20 前在國泰 App 完成登錄' },
+  { t: 'quota_low',    msg: 'momo 聯名卡網購 5% 額度只剩 $120，本周採買建議改刷 U Bear' },
+];
+
+// ---------- App 狀態 ----------
+const state = {
+  // 卡簿存在 localStorage（裝置記憶）；首次使用由引導頁建立
+  myCards: (() => {
+    try {
+      const s = JSON.parse(localStorage.getItem('cp_myCards'));
+      if (Array.isArray(s) && s.length) return s;
+    } catch (e) { /* 忽略壞資料 */ }
+    return [];
+  })(),
+  isPro: false,
+  mode: 'mine',        // mine | all
+  view: 'cards',
+  amount: 1000,
+  query: '',
+  cat: '全部',
+};
+const FREE_LIMIT = 5;
+function saveCards() {
+  try { localStorage.setItem('cp_myCards', JSON.stringify(state.myCards)); } catch (e) {}
+}
+
+// ---------- 小工具 ----------
+const $ = (s) => document.querySelector(s);
+const card = (id) => CARDS.find(c => c.id === id);
+const bank = (id) => BANKS[card(id).bank];
+const merch = (id) => MERCHANTS.find(m => m.id === id);
+const esc = (s) => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+function tile(id, w, h) {
+  const b = bank(id);
+  return `<div class="cardtile" style="width:${w||52}px;height:${h||34}px;background:linear-gradient(135deg,${b.grad[0]},${b.grad[1]})">${b.short}</div>`;
+}
+function daysLeft(end) {
+  return Math.ceil((new Date(end + 'T23:59:59') - new Date()) / 86400000);
+}
+function fmtMoney(n) {
+  return '$' + Math.round(n).toLocaleString('zh-TW');
+}
+function estRebate(o, amount) {
+  const raw = amount * o.rate / 100;
+  return o.cap > 0 ? Math.min(raw, o.cap) : raw;
+}
+function offersOfMerchant(mid) {
+  return OFFERS.filter(o => o.m === mid && daysLeft(o.end) >= 0);
+}
+function myOffers() {
+  return OFFERS.filter(o => state.myCards.includes(o.card) && daysLeft(o.end) >= 0);
+}
+
+let toastTimer;
+function toast(msg) {
+  const t = $('#toast');
+  t.textContent = msg;
+  t.classList.add('on');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('on'), 2200);
+}
+
+function openSheet(html) {
+  $('#modal-root').innerHTML = `<div class="mask" onclick="closeSheet()"></div><div class="sheet">${html}</div>`;
+  $('#modal-root').classList.add('on');
+}
+function closeSheet() {
+  $('#modal-root').classList.remove('on');
+  $('#modal-root').innerHTML = '';
+}
+
+// ---------- 付費牆 ----------
+function paywall(reason) {
+  openSheet(`
+    <div class="payhero">
+      <h3>升級 Pro 解鎖</h3>
+      <ul>
+        ${li(I.inf, `卡簿無上限（免費版 ${FREE_LIMIT} 張）`)}
+        ${li(I.bell, '優惠到期／額度／登錄提醒')}
+        ${li(I.file, '帳單健檢：算出你每月刷錯卡少賺多少')}
+        ${li(I.spark, 'AI 消費顧問無限使用')}
+      </ul>
+    </div>
+    <p class="sub" style="margin-bottom:10px">${esc(reason)}</p>
+    <button class="btn block" onclick="doSubscribe()">訂閱 Pro · NT$79/月（示範）</button>
+    <button class="btn gray block" style="margin-top:8px" onclick="closeSheet()">先不用</button>
+  `);
+}
+function doSubscribe() {
+  state.isPro = true;
+  closeSheet();
+  renderAll();
+  toast('已解鎖 Pro（示範模式）');
+}
+
+// ---------- 法律頁面 ----------
+const LEGAL = {
+  terms: {
+    title: '使用者服務條款',
+    html: `
+      <h4>1. 服務性質</h4>
+      <p>本服務為信用卡優惠資訊之整理與比較工具。本公司非銀行、非金融機構，與任何發卡機構均無代理或授權關係（推廣分潤揭露見第 6 條）。本服務不提供刷卡、付款、借貸等金融服務，亦不構成金融或投資建議。</p>
+      <h4>2. 絕不碰卡號</h4>
+      <p>本服務絕不要求使用者提供信用卡卡號、有效期限、安全碼或任何足以交易之資訊。</p>
+      <h4>3. 資訊準確性與免責</h4>
+      <p>所載優惠內容整理自各發卡機構公開資訊，僅供參考，不保證即時、完整或正確；實際以各發卡機構官方公告為準。刷卡前應自行向發卡機構確認條件（登錄、排富、上限、指定門市等）。回饋金額估算以發卡機構帳單為準。</p>
+      <h4>4. 訂閱（Pro）</h4>
+      <p>訂閱為自動續約制，將於期間屆滿時自動扣款，直至取消；可隨時於商店帳號設定取消。退款依 App Store / Google Play 規則辦理。</p>
+      <h4>5. 智慧財產</h4>
+      <p>服務內容歸本公司所有。銀行與卡片名稱、商標屬各自權利人，本服務僅為比較說明之指示性使用，無授權或贊助關係。</p>
+      <h4>6. 推廣連結揭露</h4>
+      <p>部分辦卡連結為推廣連結，使用者完成辦卡時本公司可能獲得報酬，該等連結均予標示。商業合作不影響資訊排序，推薦結果一律以回饋條件為準。</p>
+      <h4>7. 準據法</h4>
+      <p>本條款依中華民國法律解釋，爭議以台灣法院為管轄。</p>
+      <p class="muted">※ 此為節錄示意版，完整條款請見 legal/TERMS.md（正式上線前經律師複核）。</p>
+    `,
+  },
+  privacy: {
+    title: '隱私權政策',
+    html: `
+      <h4>我們蒐集什麼</h4>
+      <ul>
+        <li>帳戶資料：Email 或 LINE 帳號 ID、暱稱</li>
+        <li>卡簿：你自行登錄的信用卡名稱（絕不含卡號）</li>
+        <li>帳單健檢：你主動上傳且個別同意後的帳單內容</li>
+        <li>使用紀錄（去識別化統計）、推播 token</li>
+      </ul>
+      <h4>我們絕不蒐集</h4>
+      <p>信用卡卡號、有效期、安全碼、銀行帳號密碼、身分證字號。</p>
+      <h4>帳單健檢特別規則（重點）</h4>
+      <ul>
+        <li>每次上傳前皆須個別同意，無概括同意</li>
+        <li>傳輸採 TLS 加密、原始檔加密儲存</li>
+        <li>分析完成後 24 小時內自動刪除原始檔，僅留彙總數字</li>
+        <li>分析可能使用第三方 AI 服務（跨境處理），上傳前明確告知，不同意可不上傳，不影響其他功能</li>
+      </ul>
+      <h4>你的權利</h4>
+      <p>得查閱、複製、更正、停止利用、刪除帳號與全部資料（30 天內完成）。我們不出售個資、不以個資投放第三方廣告。</p>
+      <p class="muted">※ 此為節錄示意版，完整政策請見 legal/PRIVACY.md。</p>
+    `,
+  },
+  disclaimer: {
+    title: '免責聲明',
+    html: `
+      <h4>資料來源與準確性</h4>
+      <p>本服務之優惠資料（回饋率、上限、期間、條件）整理自各發卡機構官方公開資訊與網路公開來源，並標示來源與查核日期。資料可能因銀行隨時改版而過期，實際內容以發卡機構官方公告為準。</p>
+      <h4>非官方服務</h4>
+      <p>本服務與任何銀行、發卡機構、商家均無隸屬、代理或授權關係。所出現之銀行與卡片名稱僅為說明之用。</p>
+      <h4>非金融建議</h4>
+      <p>本服務提供之推薦與估算僅為資訊整理結果，不構成任何財務、稅務或投資建議。消費與辦卡決策由使用者自行判斷。</p>
+      <h4>損害限制</h4>
+      <p>對於信賴本服務資訊而生之損失（如回饋差額），本公司於法律許可範圍內不負賠償責任，但承諾知悉錯誤後儘速更正。若發現資料錯誤，請透過「回報錯誤」通知我們。</p>
+    `,
+  },
+};
+function legalSheet(key) {
+  const doc = LEGAL[key];
+  openSheet(`
+    <h3>${doc.title}</h3>
+    <p class="sub">最後更新：2026/8/16 · 節錄示意版</p>
+    <div class="legalbody">${doc.html}</div>
+    <button class="btn gray block" style="margin-top:10px" onclick="closeSheet()">關閉</button>
+  `);
+}
+
+// ---------- View: 卡簿 ----------
+function renderCards() {
+  const n = state.myCards.length;
+  const quotaHtml = state.isPro
+    ? `<div class="quota"><span class="muted">Pro 會員 · 卡簿無上限（目前 ${n} 張）</span></div>`
+    : `<div class="quota"><span class="muted">已登錄 ${n}/${FREE_LIMIT} 張（免費版上限）</span>
+         <div class="bar"><i style="width:${Math.min(100, n / FREE_LIMIT * 100)}%"></i></div></div>`;
+
+  const list = state.myCards.map(id => {
+    const c = card(id), b = bank(id);
+    const cnt = OFFERS.filter(o => o.card === id && daysLeft(o.end) >= 0).length;
+    return `
+      <div class="offerrow row">
+        ${tile(id)}
+        <div style="flex:1;cursor:pointer" onclick="cardDetail('${id}')">
+          <div class="cardtitle">${esc(c.name)}</div>
+          <div class="bankname">${esc(b.name)} · ${esc(c.base)}</div>
+          <div style="margin-top:4px"><span class="tag">進行中優惠 ${cnt} 筆</span></div>
+        </div>
+        <button class="xbtn" onclick="removeCard('${id}')">✕</button>
+      </div>`;
+  }).join('') || '<p class="empty">還沒有卡片——點下方「新增卡片」，<br>或點右上角「？」重新觀看引導</p>';
+
+  $('#view-cards').innerHTML = `
+    <div class="panel">
+      <h3>我的卡簿</h3>
+      ${quotaHtml}
+    </div>
+    ${list}
+    <button class="btn ghost block" onclick="addCardSheet()">＋ 新增卡片</button>
+    <p class="disc">本原型之銀行、卡片與優惠內容皆為示範資料，非即時資訊。<br>實際回饋一律以各發卡銀行官方公告為準。</p>
+    <div class="legalinks">
+      <button onclick="legalSheet('terms')">服務條款</button>·
+      <button onclick="legalSheet('privacy')">隱私權政策</button>·
+      <button onclick="legalSheet('disclaimer')">免責聲明</button>
+    </div>
+  `;
+}
+
+function addCardSheet() {
+  const candidates = CARDS.filter(c => !state.myCards.includes(c.id));
+  if (!candidates.length) { toast('所有示範卡片都已加入'); return; }
+  const rows = candidates.map(c => `
+    <div class="listitem">
+      ${tile(c.id)}
+      <div style="flex:1">
+        <div class="cardtitle">${esc(c.name)}</div>
+        <div class="bankname">${esc(bank(c.id).name)} · ${esc(c.base)}</div>
+      </div>
+      <button class="btn" onclick="addCard('${c.id}')">加入</button>
+    </div>`).join('');
+  openSheet(`
+    <h3>新增卡片</h3>
+    <p class="sub">只需選擇卡片名稱，無需卡號或其他個資</p>
+    ${rows}
+  `);
+}
+function addCard(id) {
+  if (!state.isPro && state.myCards.length >= FREE_LIMIT) {
+    paywall('免費版最多登錄 5 張卡，升級 Pro 解鎖無限卡簿');
+    return;
+  }
+  state.myCards.push(id);
+  saveCards();
+  closeSheet();
+  renderAll();
+  toast(`已加入 ${card(id).name}`);
+}
+function removeCard(id) {
+  state.myCards = state.myCards.filter(x => x !== id);
+  saveCards();
+  renderAll();
+  toast(`已移除 ${card(id).name}`);
+}
+function cardDetail(id) {
+  const c = card(id), b = bank(id);
+  const os = OFFERS.filter(o => o.card === id && daysLeft(o.end) >= 0);
+  const rows = os.length ? os.map(o => {
+    const m = merch(o.m);
+    return `<div class="listitem">
+      <div style="flex:1">
+        <div class="cardtitle">${esc(m.name)}</div>
+        <div class="bankname">${o.login ? '需登錄 · ' : ''}${o.pay !== '不限' ? '限 ' + esc(o.pay) + ' · ' : ''}${o.cap ? '月上限 ' + fmtMoney(o.cap) : ''}</div>
+      </div>
+      <span class="ratebadge">${o.rate}%</span>
+      <span class="days">${daysLeft(o.end)} 天</span>
+    </div>`;
+  }).join('') : `<p class="empty">此卡目前無進行中的示範優惠</p>`;
+  openSheet(`
+    <div class="row" style="margin-bottom:10px">${tile(id, 64, 42)}
+      <div><h3>${esc(c.name)}</h3><p class="sub">${esc(b.name)} · ${esc(c.base)}</p></div>
+    </div>
+    <h3 style="font-size:14px">進行中優惠（${os.length}）</h3>
+    ${rows}
+    <button class="btn gray block" style="margin-top:10px" onclick="closeSheet()">關閉</button>
+  `);
+}
+
+// ---------- View: 搜尋 ----------
+function renderSearch() {
+  const cats = ['全部', ...new Set(MERCHANTS.map(m => m.cat))];
+  const chips = cats.map(c => `<button class="chip ${state.cat === c ? 'on' : ''}" onclick="setCat('${c}')">${c}</button>`).join('');
+
+  let targets = MERCHANTS;
+  if (state.cat !== '全部') targets = targets.filter(m => m.cat === state.cat);
+  const q = state.query.trim().toLowerCase();
+  if (q) targets = targets.filter(m => (m.name + ' ' + m.alias).toLowerCase().includes(q));
+
+  const groups = targets.map(m => {
+    let os = offersOfMerchant(m.id);
+    if (state.mode === 'mine') os = os.filter(o => state.myCards.includes(o.card));
+    os.sort((a, b) => estRebate(b, state.amount) - estRebate(a, state.amount));
+    return { m, os };
+  }).filter(g => g.os.length);
+
+  const html = groups.map(({ m, os }) => `
+    <div class="merchant-head">${esc(m.name)}<span class="cnt">${esc(m.cat)} · ${os.length} 筆優惠${state.mode === 'mine' ? '（我的卡）' : ''}</span></div>
+    ${os.map(o => offerRow(o, { merchant: false })).join('')}
+  `).join('');
+
+  const emptyHint = state.mode === 'mine'
+    ? `<p class="empty">你的卡在這裡沒有涵蓋優惠<br><button class="btn ghost" style="margin-top:8px" onclick="setMode('all')">切換看全部卡片</button></p>`
+    : `<p class="empty">找不到符合的商家，試試別的關鍵字或分類</p>`;
+
+  $('#view-search').innerHTML = `
+    <div class="searchbar">
+      <input type="text" id="q" placeholder="輸入商家或分類，如：全聯、foodpanda" value="${esc(state.query)}" oninput="setQuery(this.value)">
+    </div>
+    <div class="chips">${chips}</div>
+    <div class="amtrow">消費金額 NT$ <input type="number" min="0" value="${state.amount}" oninput="setAmount(this.value)"> <span class="muted">（估算各卡實際回饋）</span></div>
+    <div id="searchResults">${html || emptyHint}</div>
+    <p class="disc">回饋估算僅供參考，實際以發卡銀行公告與帳單為準。</p>
+  `;
+}
+function setQuery(v) { state.query = v; renderSearch(); const q = $('#q'); q.focus(); q.setSelectionRange(v.length, v.length); }
+function setCat(c) { state.cat = c; state.query = ''; renderSearch(); }
+function setAmount(v) { state.amount = Math.max(0, +v || 0); renderSearch(); }
+function setMode(m) { state.mode = m; $('#segToggle [data-mode=mine]').classList.toggle('on', m === 'mine'); $('#segToggle [data-mode=all]').classList.toggle('on', m === 'all'); renderAll(); }
+
+function offerRow(o, opt = {}) {
+  const c = card(o.card), mine = state.myCards.includes(o.card);
+  const est = estRebate(o, state.amount);
+  const capped = o.rate > 0 && o.cap > 0 && (state.amount * o.rate / 100) > o.cap;
+  const d = daysLeft(o.end);
+  const idx = OFFERS.indexOf(o);
+  return `
+    <div class="offerrow" style="cursor:pointer" onclick="offerDetail(${idx})">
+      <div class="row">
+        ${tile(o.card)}
+        <div style="flex:1">
+          <div class="cardtitle">${esc(c.name)} ${mine ? '<span class="have">✓ 你有</span>' : '<span class="nothave">你沒有</span>'}</div>
+          <div class="bankname">${esc(bank(o.card).name)}${opt.merchant === false ? '' : ' · ' + esc(merch(o.m).name)}</div>
+        </div>
+        <div style="text-align:right">
+          ${o.rn
+            ? `<div class="ratebadge" style="background:#fff7ed;color:#c2410c;border-color:#fed7aa">${esc(o.rn)}</div>`
+            : `<div class="ratebadge">${o.rate}%</div>`}
+          <div class="days" style="margin-top:3px">${d} 天後到期</div>
+        </div>
+      </div>
+      <div class="row" style="margin-top:8px">
+        ${o.pay !== '不限' ? `<span class="paytag">綁 ${esc(o.pay)}</span>` : ''}
+        ${o.login ? '<span class="tag">需登錄</span>' : ''}
+        ${o.cap ? `<span class="tag">月上限 ${fmtMoney(o.cap)}</span>` : (o.rate > 0 ? '<span class="tag">無上限</span>' : '')}
+        <span style="flex:1"></span>
+        ${o.rate > 0
+          ? `<span class="est">回饋 <b>${fmtMoney(est)}</b>${capped ? ' <span class="muted">(達上限)</span>' : ''}</span>`
+          : `<span class="est muted">非回饋型優惠</span>`}
+      </div>
+      ${o.note ? `<div class="muted" style="margin-top:6px">※ ${esc(o.note)}${o.source && !o.source.includes('example.com') ? ` <a class="srclink" href="${esc(o.source)}" target="_blank" rel="noopener">資料來源 ↗</a>` : ''}</div>` : (o.source && !o.source.includes('example.com') ? `<div class="muted" style="margin-top:6px"><a class="srclink" href="${esc(o.source)}" target="_blank" rel="noopener">資料來源 ↗</a></div>` : '')}
+      <div class="row" style="margin-top:8px">
+        ${o.login ? `<button class="btn ghost" onclick="event.stopPropagation();toast('示意：導向 ${esc(bank(o.card).name)} 登錄頁')">去登錄</button>` : ''}
+        ${!mine ? `<button class="btn ghost" onclick="event.stopPropagation();toast('示意：串接辦卡 affiliate 連結')">查看辦卡</button>` : ''}
+      </div>
+    </div>`;
+}
+
+// ---------- 優惠詳情（含來源佐證） ----------
+function offerDetail(idx) {
+  const o = OFFERS[idx];
+  if (!o) return;
+  const c = card(o.card), m = merch(o.m), mine = state.myCards.includes(o.card);
+  const d = daysLeft(o.end);
+  const vd = o.vd ? o.vd.slice(0, 10) : null;
+  const isReal = o.source && !o.source.includes('example.com');
+  openSheet(`
+    <div class="row" style="margin-bottom:10px">
+      ${tile(o.card, 64, 42)}
+      <div style="flex:1">
+        <h3 style="margin:0;font-size:15px">${esc(c.name)}${mine ? ' <span class="have">✓ 你有</span>' : ''}</h3>
+        <p class="sub" style="margin:2px 0 0">${esc(bank(o.card).name)} · ${esc(m.name)}（${esc(m.cat)}）</p>
+      </div>
+      ${o.rn
+        ? `<div class="ratebadge" style="background:#fff7ed;color:#c2410c;border-color:#fed7aa">${esc(o.rn)}</div>`
+        : `<div class="ratebadge">${o.rate}%</div>`}
+    </div>
+    <div class="row" style="margin-bottom:10px">
+      ${o.pay !== '不限' ? `<span class="paytag">綁 ${esc(o.pay)}</span>` : ''}
+      ${o.login ? '<span class="tag">需登錄</span>' : ''}
+      ${o.cap ? `<span class="tag">上限 ${fmtMoney(o.cap)}</span>` : ''}
+      <span class="tag">${o.sd ? `${o.sd.slice(0, 10)} ~ ` : ''}${o.end}（剩 ${d} 天）</span>
+    </div>
+    ${o.full ? `<div class="legalbody" style="margin-bottom:10px"><h4>活動條款（依官方頁面整理）</h4><p>${esc(o.full)}</p></div>` : ''}
+    ${isReal ? `
+      <a class="btn block" style="display:block;text-align:center;text-decoration:none" href="${esc(o.source)}" target="_blank" rel="noopener">開啟原始資料來源 ↗</a>
+      <p class="muted" style="text-align:center;margin-top:6px">資料查核日：${vd || '—'} · 如有出入以發卡銀行官方公告為準</p>
+    ` : `<p class="muted" style="text-align:center">示範資料（非即時），實際內容以發卡銀行公告為準</p>`}
+    <div class="row" style="margin-top:10px">
+      <button class="btn" style="flex:1" onclick="shareOffer(${idx})">分享</button>
+      <button class="btn ghost" style="flex:1" onclick="toast('示意：開啟回報表單（描述問題＋截圖）')">⚠ 回報錯誤</button>
+      <button class="btn gray" style="flex:1" onclick="closeSheet()">關閉</button>
+    </div>
+  `);
+}
+
+// ---------- 分享卡（canvas 生成圖片） ----------
+function shareOffer(idx) {
+  const o = OFFERS[idx];
+  if (!o) return;
+  const c = card(o.card), m = merch(o.m), b = bank(o.card);
+  const cv = document.createElement('canvas');
+  cv.width = 1080; cv.height = 1080;
+  const ctx = cv.getContext('2d');
+
+  const grad = ctx.createLinearGradient(0, 0, 1080, 1080);
+  grad.addColorStop(0, '#312e81'); grad.addColorStop(.6, '#6d28d9'); grad.addColorStop(1, '#a21caf');
+  ctx.fillStyle = grad; ctx.fillRect(0, 0, 1080, 1080);
+
+  ctx.fillStyle = 'rgba(255,255,255,.9)';
+  ctx.font = '600 44px "PingFang TC","Microsoft JhengHei",sans-serif';
+  ctx.fillText('卡優惠 CardPerks', 72, 120);
+  ctx.fillStyle = 'rgba(255,255,255,.55)';
+  ctx.font = '400 30px sans-serif';
+  ctx.fillText('結帳前查一下，刷對卡', 72, 172);
+
+  // 銀行＋卡名
+  ctx.fillStyle = 'rgba(255,255,255,.75)';
+  ctx.font = '500 40px sans-serif';
+  ctx.fillText(`${b.name} · ${c.name}`, 72, 330);
+
+  // 大標：回饋率或折扣
+  ctx.fillStyle = '#fff';
+  ctx.font = '800 190px sans-serif';
+  const big = o.rn || `${o.rate}%`;
+  ctx.fillText(big, 68, 540);
+  ctx.font = '600 46px sans-serif';
+  ctx.fillText(o.rn ? '限時優惠' : '回饋', 74 + ctx.measureText(big).width * (o.rn ? 0.32 : 1.1) / 0.9, 530);
+
+  // 商家
+  ctx.fillStyle = '#fff';
+  ctx.font = '700 64px sans-serif';
+  ctx.fillText(m.name, 72, 680);
+  ctx.fillStyle = 'rgba(255,255,255,.85)';
+  ctx.font = '400 38px sans-serif';
+  const conds = [o.pay !== '不限' ? `綁${o.pay}` : null, o.login ? '需登錄' : null,
+                 o.cap ? `上限$${o.cap}` : null].filter(Boolean).join(' · ');
+  ctx.fillText(`${o.end} 前有效${conds ? ' · ' + conds : ''}`, 72, 750);
+
+  // 底部免責與來源
+  ctx.fillStyle = 'rgba(255,255,255,.5)';
+  ctx.font = '400 28px sans-serif';
+  let host = '';
+  try { host = new URL(o.source).hostname; } catch (e) { host = ''; }
+  ctx.fillText(host ? `資料來源：${host}` : '資料來源：發卡銀行官網', 72, 960);
+  ctx.fillText('實際權益以發卡銀行官方公告為準', 72, 1005);
+
+  cv.toBlob(async (blob) => {
+    if (!blob) { toast('圖片生成失敗'); return; }
+    const file = new File([blob], 'cardperks.png', { type: 'image/png' });
+    if (navigator.canShare && navigator.canShare({ files: [file] })) {
+      try { await navigator.share({ files: [file], title: '卡優惠 CardPerks' }); return; } catch (e) { /* 取消 */ }
+    }
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = `cardperks_${o.card}_${o.m}.png`;
+    a.click();
+    toast('已下載分享圖（示意）');
+  });
+}
+
+// ---------- 資料涵蓋範圍（透明度） ----------
+async function coverageSheet() {
+  let data = null;
+  try { data = await fetch((location.protocol.startsWith('http') ? location.origin : '') + '/api/coverage').then(r => r.json()); } catch (e) {}
+  const rows = data ? data.banks.map(b => `
+    <div class="listitem">
+      <div style="flex:1"><b>${esc(b.name)}</b></div>
+      <span class="tag">${b.offers} 筆</span>
+    </div>`).join('') : '<p class="empty">無法取得覆蓋資料（離線模式）</p>';
+  openSheet(`
+    <h3><span class="lico">${I.file}</span>資料涵蓋範圍與更新</h3>
+    <p class="sub">我們如何收集與驗證優惠資料</p>
+    ${data ? `
+      <div class="panel" style="margin:8px 0;padding:10px">
+        <div class="row" style="justify-content:space-around;text-align:center">
+          <div><div class="muted">總優惠</div><div style="font-size:20px;font-weight:800">${data.total_offers}</div></div>
+          <div><div class="muted">附官方來源</div><div style="font-size:20px;font-weight:800;color:var(--ok)">${data.official_sourced_offers}</div></div>
+          <div><div class="muted">最近查核</div><div style="font-size:20px;font-weight:800">${data.last_verified_at ? data.last_verified_at.slice(0, 10) : '—'}</div></div>
+        </div>
+      </div>
+      <h4 style="font-size:13px;margin:8px 0 4px;color:var(--brand)">已涵蓋銀行（${data.banks.length} 家）</h4>
+    ` : ''}
+    <div class="legalbody">${rows}
+      <h4>資料方法</h4>
+      <p>${esc(data ? data.methodology : '資料整理自各發卡銀行官方網站公開頁面，每筆保留原始來源與查核時間。')}</p>
+      <p>更新頻率：${esc(data ? data.update_frequency : '每日')}。點任一優惠可查看「原始資料來源」自行驗證。全台約 37 家發卡機構，目前優先涵蓋主要銀行並持續擴充；發現缺漏可透過優惠詳情內的「回報資料錯誤」通知我們。</p>
+    </div>
+    <button class="btn gray block" style="margin-top:10px" onclick="closeSheet()">關閉</button>
+  `);
+}
+
+// ---------- View: 地圖 ----------
+let mapObj = null, markerLayer = null;
+function renderMap() {
+  // 骨架只建一次，避免重寫 DOM 讓 Leaflet 實例失效
+  if (!document.getElementById('map')) {
+    $('#view-map').innerHTML = `
+      <div id="map"></div>
+      <p class="maplegend"></p>
+    `;
+  }
+  $('#view-map .maplegend').innerHTML = `
+    <span class="lico">${I.pin}</span>地圖顯示實體商家據點（網購／外送商家請用「搜尋」）。<br>
+    標籤數字＝該門市目前的優惠筆數${state.mode === 'mine' ? '（僅統計你的卡）' : '（全部卡片）'}。點擊標籤看優惠明細。<br>
+    <span class="muted">優惠以發卡銀行官方公告為準 · 圖資 © OpenStreetMap 貢獻者</span>
+  `;
+  setTimeout(initMap, 50);
+}
+function initMap() {
+  if (typeof L === 'undefined') {
+    $('#map').innerHTML = '<p class="empty">地圖元件載入失敗（需網路連線載入 Leaflet／圖資）</p>';
+    return;
+  }
+  if (mapObj && (!mapObj.getContainer() || !mapObj.getContainer().isConnected)) {
+    mapObj = null; markerLayer = null;  // 舊實例的容器已被移除，重建
+  }
+  if (!mapObj) {
+    mapObj = L.map('map', { zoomControl: true }).setView([25.045, 121.54], 13);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; OpenStreetMap', maxZoom: 19,
+    }).addTo(mapObj);
+    markerLayer = L.layerGroup().addTo(mapObj);
+  }
+  markerLayer.clearLayers();
+  MERCHANTS.filter(m => !m.online).forEach(m => {
+    m.locs.forEach(loc => {
+      let os = offersOfMerchant(m.id);
+      if (state.mode === 'mine') os = os.filter(o => state.myCards.includes(o.card));
+      if (!os.length) return;
+      const icon = L.divIcon({ html: `<div class="pin">${m.name.slice(0, 4)}<br>${os.length}</div>`, className: '', iconSize: [56, 40], iconAnchor: [28, 38] });
+      L.marker([loc.lat, loc.lng], { icon })
+        .bindPopup(popupHtml(m, loc, os))
+        .addTo(markerLayer);
+    });
+  });
+}
+function popupHtml(m, loc, os) {
+  const rows = os.slice(0, 4).map(o => `
+    <div class="pop-offer">
+      <b>${esc(card(o.card).name)}</b> <span class="nothave">${state.myCards.includes(o.card) ? '✓' : ''}</span><br>
+      <span class="ratebadge" style="font-size:11px">${o.rate}%</span>
+      ${o.pay !== '不限' ? `<span class="paytag">綁 ${esc(o.pay)}</span>` : ''}
+      ${o.login ? '<span class="tag">需登錄</span>' : ''}
+    </div>`).join('');
+  return `<b>${esc(m.name)} ${esc(loc.n)}</b><div class="muted" style="margin:2px 0 6px">${esc(m.cat)} · ${os.length} 筆優惠</div>${rows}`;
+}
+
+// ---------- View: 優惠 ----------
+function renderOffers() {
+  let os = OFFERS.filter(o => daysLeft(o.end) >= 0).slice();
+  if (state.mode === 'mine') os = os.filter(o => state.myCards.includes(o.card));
+  os.sort((a, b) => daysLeft(a.end) - daysLeft(b.end));
+  $('#view-offers').innerHTML = `
+    <div class="note"><span class="lico">${I.cal}</span>依到期日排序——越快結束的排越前面${state.mode === 'mine' ? '，目前只顯示你持有的卡' : '，目前顯示全部卡片'}。<br><span class="muted">資料來源：各發卡銀行官網 · 以官方公告為準 · <button class="linklike" onclick="coverageSheet()">資料涵蓋範圍與更新 ⟶</button></span></div>
+    ${os.map(o => offerRow(o)).join('') || '<p class="empty">目前沒有符合的優惠</p>'}
+  `;
+}
+
+// ---------- View: Pro ----------
+function renderPro() {
+  $('#view-pro').innerHTML = `
+    <div class="pricehero">
+      <div class="plan">CardPerks Pro</div>
+      <div class="price">NT$79<span style="font-size:14px">/月</span></div>
+      <div class="per">或 NT$790/年（省兩個月）· 自動續約，可隨時取消</div>
+      <div style="margin-top:14px">
+        ${state.isPro
+          ? '<span style="background:#fbbf24;color:#451a03;font-weight:800;border-radius:999px;padding:6px 14px;font-size:13px">✓ 目前是 Pro 會員（示範）</span>'
+          : '<button class="btn warn" style="padding:11px 28px" onclick="doSubscribe()">立即訂閱</button>'}
+      </div>
+    </div>
+    <div class="panel">
+      <table class="cmp">
+        <tr><th></th><th>免費版</th><th>Pro</th></tr>
+        <tr><td>卡簿張數</td><td>5 張</td><td class="yes">無限</td></tr>
+        <tr><td>商家搜尋／地圖</td><td class="yes">✓</td><td class="yes">✓</td></tr>
+        <tr><td>到期／額度／登錄提醒</td><td class="no">—</td><td class="yes">✓</td></tr>
+        <tr><td>帳單健檢（刷錯卡偵測）</td><td class="no">—</td><td class="yes">✓</td></tr>
+        <tr><td>AI 消費顧問</td><td class="no">—</td><td class="yes">無限</td></tr>
+        <tr><td>家庭共享卡簿</td><td class="no">—</td><td class="yes">✓</td></tr>
+      </table>
+    </div>
+    <div class="panel">
+      <h3><span class="lico">${I.file}</span>帳單健檢（Pro 功能示範）</h3>
+      <p class="muted" style="margin:6px 0 12px;line-height:1.7">
+        上傳信用卡月帳單 PDF，AI 分析你的每一筆消費，算出「都刷對卡的話可以多拿多少回饋」。
+      </p>
+      <button class="btn block" onclick="billCheck()">模擬上傳帳單</button>
+    </div>
+    ${state.isPro ? '<button class="btn gray block" onclick="resetPro()">還原示範狀態（取消 Pro）</button>' : ''}
+    <div class="legalinks" style="margin-top:14px">
+      <button onclick="legalSheet('terms')">服務條款</button>·
+      <button onclick="legalSheet('privacy')">隱私權政策</button>·
+      <button onclick="legalSheet('disclaimer')">免責聲明</button>
+    </div>
+  `;
+}
+function resetPro() { state.isPro = false; renderAll(); toast('已還原為免費版（示範）'); }
+function billCheck() {
+  if (!state.isPro) { paywall('帳單健檢是 Pro 功能，先訂閱即可解鎖（示範可直接開通）'); return; }
+  openSheet(`
+    <h3><span class="lico">${I.file}</span>帳單健檢：上傳前同意</h3>
+    <p class="sub">帳單屬財務個資，上傳前請詳閱以下處理規則（每次上傳皆需重新同意）</p>
+    <div class="consentbox">
+      <label><input type="checkbox" id="consentChk"> 我已閱讀並同意以下處理規則</label>
+      <ul style="margin:8px 0 0 20px">
+        <li>帳單內容將以加密方式傳輸與儲存</li>
+        <li>分析由第三方 AI 服務處理（跨境傳輸），僅用於產生回饋建議</li>
+        <li><b>分析完成後 24 小時內自動刪除原始帳單</b>，僅保留彙總數字</li>
+        <li>你可隨時要求刪除所有分析結果（隱私權政策 §7）</li>
+      </ul>
+    </div>
+    <button class="btn block" onclick="billCheckRun()">開始分析（模擬）</button>
+    <button class="btn gray block" style="margin-top:8px" onclick="closeSheet()">取消</button>
+  `);
+}
+function billCheckRun() {
+  if (!document.getElementById('consentChk').checked) { toast('請先勾選同意才能繼續'); return; }
+  openSheet(`
+    <h3><span class="lico">${I.file}</span>帳單健檢結果（模擬）</h3>
+    <p class="sub">分析期間：2026 年 7 月 · 總消費 NT$28,450</p>
+    <div class="panel" style="margin:10px 0">
+      <div class="row" style="justify-content:space-around;text-align:center">
+        <div><div class="muted">實拿回饋</div><div style="font-size:22px;font-weight:800">$393</div></div>
+        <div><div class="muted">最佳化可拿</div><div style="font-size:22px;font-weight:800;color:var(--ok)">$1,240</div></div>
+        <div><div class="muted">少賺</div><div style="font-size:22px;font-weight:800;color:var(--danger)">$847</div></div>
+      </div>
+    </div>
+    <h3 style="font-size:14px">前 3 大改善空間</h3>
+    <div class="listitem"><div style="flex:1"><b>foodpanda 消費 $2,340</b><div class="muted">刷了 J 卡（1%）→ 改刷 @GoGo（3.8%）多賺 $65</div></div></div>
+    <div class="listitem"><div style="flex:1"><b>全聯消費 $3,980</b><div class="muted">刷了 LINE Pay 卡 → 改刷 CUBE 登錄 5% 多賺 $132</div></div></div>
+    <div class="listitem"><div style="flex:1"><b>momo 購物 $5,200</b><div class="muted">刷了 U Bear → 辦 momo 卡 5% 多賺 $312</div></div></div>
+    <button class="btn block" style="margin-top:10px" onclick="closeSheet()">了解</button>
+  `);
+}
+
+// ---------- 提醒（付費功能） ----------
+function bellSheet() {
+  if (!state.isPro) {
+    openSheet(`
+      <h3><span class="lico">${I.bell}</span>優惠提醒</h3>
+      <div class="lockrow">
+        ${REMINDERS.map(r => `<div class="listitem"><div style="flex:1"><div class="cardtitle">${esc(r.msg)}</div></div></div>`).join('')}
+      </div>
+      <div style="text-align:center;margin-top:10px">
+        <p class="muted">到期／額度／登錄提醒是 Pro 功能</p>
+        <button class="btn" onclick="paywall('解鎖推播提醒')">升級 Pro 解鎖</button>
+      </div>
+    `);
+    return;
+  }
+  openSheet(`
+    <h3><span class="lico">${I.bell}</span>我的提醒</h3>
+    ${REMINDERS.map(r => `<div class="listitem"><div style="flex:1"><div class="cardtitle">${esc(r.msg)}</div></div></div>`).join('')}
+    <button class="btn gray block" style="margin-top:10px" onclick="closeSheet()">關閉</button>
+  `);
+}
+
+// ---------- 引導頁（首次登入） ----------
+const OB_SEARCH_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>';
+const OB_SLIDES = [
+  { icon: I.card, title: '記下你的卡', desc: '只需選擇卡片名稱，<b>不用卡號、不用任何個資</b>。<br>免費版可登錄 5 張，Pro 無上限。' },
+  { icon: OB_SEARCH_SVG, title: '結帳前，查一下', desc: '輸入商家與金額，立即比較你每張卡的<br>回饋金額、綁定支付與登錄條件。' },
+  { icon: I.pin, title: '走到哪，優惠到哪', desc: '地圖顯示附近商家有哪些卡有優惠，<br>結帳前 30 秒不再猶豫。' },
+];
+let obStep = 0;
+const obPicked = new Set();
+function renderOb() {
+  const el = $('#onboard');
+  const total = 4;
+  const dots = Array.from({ length: total }, (_, i) => `<i class="${i === obStep ? 'on' : ''}"></i>`).join('');
+  const top = `<div class="ob-top"><button class="ob-skip" onclick="finishOb(true)">略過</button></div>`;
+  if (obStep < 3) {
+    const s = OB_SLIDES[obStep];
+    el.innerHTML = `
+      ${top}
+      <div class="ob-hero">
+        <div class="ob-icon">${s.icon}</div>
+        <h2>${s.title}</h2>
+        <p>${s.desc}</p>
+      </div>
+      <div class="ob-dots">${dots}</div>
+      <button class="btn-w" onclick="obNext()">${obStep === 2 ? '選擇我的卡' : '下一步'}</button>
+    `;
+  } else {
+    el.innerHTML = `
+      ${top}
+      <div class="ob-pickwrap">
+        <div class="ob-pickhead"><h2>你手上有哪些卡？</h2><p>選 1 張以上即可開始（之後可隨時增刪）</p></div>
+        <div class="pickgrid">
+          ${CARDS.map(c => `
+            <button class="pick ${obPicked.has(c.id) ? 'on' : ''}" onclick="obPick('${c.id}')">
+              ${tile(c.id, 40, 26)}<span>${esc(c.name)}</span>
+            </button>`).join('')}
+        </div>
+      </div>
+      <div class="ob-dots">${dots}</div>
+      <button class="btn-w" ${obPicked.size ? '' : 'disabled'} onclick="finishOb(false)">
+        ${obPicked.size ? `開始使用（${obPicked.size} 張卡）` : `請至少選 1 張卡`}
+      </button>
+    `;
+  }
+}
+function obNext() { obStep = Math.min(3, obStep + 1); renderOb(); }
+function obPick(id) {
+  if (!obPicked.has(id) && obPicked.size >= FREE_LIMIT && !state.isPro) {
+    toast(`免費版最多選 ${FREE_LIMIT} 張（之後可升級 Pro）`);
+    return;
+  }
+  obPicked.has(id) ? obPicked.delete(id) : obPicked.add(id);
+  renderOb();
+}
+function finishOb(skipped) {
+  if (!skipped && obPicked.size) {
+    state.myCards = [...obPicked];
+    saveCards();
+  }
+  try { localStorage.setItem('cp_onboarded', '1'); } catch (e) {}
+  $('#onboard').classList.remove('on');
+  renderAll();
+  if (!state.myCards.length) toast('稍後可在「卡簿」新增卡片，或點右上「？」重看引導');
+}
+function showOnboarding(force) {
+  if (!force && localStorage.getItem('cp_onboarded')) return;
+  // 已有卡簿者直接跳到選卡步（預選現有卡）
+  obStep = state.myCards.length ? 3 : 0;
+  obPicked.clear();
+  state.myCards.forEach(id => obPicked.add(id));
+  renderOb();
+  $('#onboard').classList.add('on');
+}
+$('#helpBtn').addEventListener('click', () => showOnboarding(true));
+
+// ---------- 導覽 ----------
+function switchView(v) {
+  state.view = v;
+  document.querySelectorAll('nav button').forEach(b => b.classList.toggle('on', b.dataset.v === v));
+  document.querySelectorAll('.view').forEach(s => s.classList.remove('on'));
+  $('#view-' + v).classList.add('on');
+  if (v === 'map') renderMap();  // 地圖內容為延遲渲染，進到分頁時才建
+}
+function renderAll() {
+  renderCards(); renderSearch(); renderOffers(); renderPro();
+  $('#proChip').classList.toggle('on', state.isPro);
+  if (state.view === 'map') renderMap();
+}
+
+$('#nav').addEventListener('click', e => {
+  const b = e.target.closest('button'); if (b) switchView(b.dataset.v);
+});
+$('#segToggle').addEventListener('click', e => {
+  const b = e.target.closest('button'); if (!b) return;
+  state.mode = b.dataset.mode;
+  $('#segToggle [data-mode=mine]').classList.toggle('on', state.mode === 'mine');
+  $('#segToggle [data-mode=all]').classList.toggle('on', state.mode === 'all');
+  renderAll();
+});
+$('#bellBtn').addEventListener('click', bellSheet);
+
+// ---------- API 資料載入（後端 http 服務時自動換真資料；file:// 或離線時沿用示範資料） ----------
+const API_BASE = location.protocol.startsWith('http') ? location.origin : '';
+async function bootFromAPI() {
+  if (!API_BASE) return false;
+  try {
+    const [cardsR, merchR, offersR] = await Promise.all([
+      fetch(API_BASE + '/api/cards').then(r => r.json()),
+      fetch(API_BASE + '/api/merchants').then(r => r.json()),
+      fetch(API_BASE + '/api/offers').then(r => r.json()),
+    ]);
+    const PALETTE = [
+      ['#475569', '#94a3b8'], ['#b91c1c', '#f87171'], ['#065f46', '#34d399'],
+      ['#7e22ce', '#c084fc'], ['#9a3412', '#fb923c'], ['#0e7490', '#67e8f9'], ['#9d174d', '#f9a8d4'],
+    ];
+    let pi = Object.keys(BANKS).length;
+    CARDS.length = 0;
+    cardsR.forEach(c => {
+      if (!BANKS[c.bank.code]) {
+        BANKS[c.bank.code] = { name: c.bank.name, short: c.bank.short_name, grad: PALETTE[pi++ % PALETTE.length] };
+      }
+      CARDS.push({ id: c.slug, bank: c.bank.code, name: c.name, base: c.base_note || '' });
+    });
+    MERCHANTS.length = 0;
+    merchR.forEach(m => MERCHANTS.push({
+      id: m.slug, name: m.name, cat: m.category, online: m.is_online,
+      alias: ((m.aliases || []).join(' ') + ' ' + m.name).toLowerCase(),
+      locs: (m.locations || []).map(l => ({ n: l.name, lat: l.lat, lng: l.lng })),
+    }));
+    const PAY = { any: '不限', line_pay: 'LINE Pay', pi_wallet: 'Pi 拍錢包', tap: '行動支付', other: '限特定支付' };
+    OFFERS.length = 0;
+    offersR.items.forEach(o => {
+      if (o.days_left < 0 || !o.merchant) return;
+      OFFERS.push({
+        card: o.card.slug, m: o.merchant.slug, rate: o.reward_rate,
+        rn: o.reward_note || null, cap: o.monthly_cap || 0,
+        login: o.requires_login, pay: PAY[o.pay_channel] || '不限',
+        end: o.ends_on, sd: o.starts_on, note: (o.terms || '').slice(0, 80),
+        full: o.terms || '', source: o.source_url, vd: o.verified_at,
+        bankName: o.card.bank.name, cardName: o.card.name,
+      });
+    });
+    // 卡簿初始值中已不在資料庫的卡自動剔除
+    const validSlugs = new Set(CARDS.map(c => c.id));
+    state.myCards = state.myCards.filter(id => validSlugs.has(id));
+    return true;
+  } catch (e) {
+    console.warn('API 載入失敗，沿用內嵌示範資料', e);
+    return false;
+  }
+}
+
+renderAll();
+bootFromAPI().then(ok => {
+  if (ok) {
+    document.querySelector('.logo small').innerHTML = 'CardPerks <span class="badge-live">即時資料</span>';
+    renderAll();
+    if (state.view === 'map') renderMap();
+  }
+  showOnboarding();  // 首次登入（或 API 就緒）後顯示引導
+});
+</script>
+</body>
+</html>
