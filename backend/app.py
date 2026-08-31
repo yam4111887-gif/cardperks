@@ -45,15 +45,18 @@ app.add_middleware(
     CORSMiddleware, allow_origins=["*"], allow_methods=["*"], allow_headers=["*"],
 )
 
-with Session(engine) as db:
-    if ensure_seed(db):
-        print("已建立示範資料")
-    n = load_approved(db)
-    if n:
-        print(f"已匯入 {n} 筆審核通過優惠")
-    x = expire_offers(db)
-    if x:
-        print(f"已將 {x} 筆過期優惠下架（status=expired）")
+try:
+    with Session(engine) as db:
+        if ensure_seed(db):
+            print("已建立示範資料")
+        n = load_approved(db)
+        if n:
+            print(f"已匯入 {n} 筆審核通過優惠")
+        x = expire_offers(db)
+        if x:
+            print(f"已將 {x} 筆過期優惠下架（status=expired）")
+except Exception as e:  # serverless 並發冷啟動可能撞唯一鍵；資料已由本機管線維護
+    print(f"啟動初始化略過（{type(e).__name__}）")
 
 DEMO_USER_EMAIL = "demo@cardperks.app"
 
@@ -336,6 +339,8 @@ TASK_STATE = {"running": False, "last": None, "started_at": None}
 
 @app.get("/api/tasks/daily")
 def trigger_daily(secret: str = "", request: Request = None):
+    if os.environ.get("VERCEL"):
+        raise HTTPException(501, "爬蟲管線不支援 serverless：請在本機執行 python pipeline/daily.py（資料會寫入雲端資料庫）")
     want = os.environ.get("CRON_SECRET", "")
     client_host = request.client.host if request and request.client else ""
     if want:

@@ -98,8 +98,26 @@ class UserCard(Base):
     added_at = Column(DateTime, default=datetime.utcnow)
 
 
+def _load_dotenv():
+    """讀 backend/.env（KEY=VALUE）注入環境變數——本機管線直連雲端資料庫用，不覆蓋既有值"""
+    path = os.path.join(os.path.dirname(os.path.abspath(__file__)), ".env")
+    if not os.path.exists(path):
+        return
+    try:
+        with open(path, encoding="utf-8") as f:
+            for line in f:
+                line = line.strip()
+                if not line or line.startswith("#") or "=" not in line:
+                    continue
+                k, v = line.split("=", 1)
+                os.environ.setdefault(k.strip(), v.strip())
+    except OSError:
+        pass
+
+
 def get_engine(path=None):
     """有 DATABASE_URL（例如 Supabase/Postgres）就用它，否則本機 SQLite"""
+    _load_dotenv()
     url = os.environ.get("DATABASE_URL")
     if url:
         # Supabase 給的是 postgres:// 前綴，SQLAlchemy 需要 postgresql+psycopg2://

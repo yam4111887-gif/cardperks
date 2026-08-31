@@ -3,6 +3,25 @@
 > 目標：把「API + 原型 + 每日爬蟲」搬到雲上，讓朋友用手機實測。
 > 2026-08 現況：本地全功能可用（`cd backend && python app.py` → http://localhost:8000）。
 
+## 選項 V：Vercel ＋ Supabase ＋ 本機爬蟲（免信用卡，2026-09 起的採用方案）
+
+分工：Vercel（serverless）跑網站＋輕量 API；Supabase 放資料庫；**Playwright 爬蟲留本機跑**（serverless 跑不動瀏覽器）。
+
+1. **Supabase**：new project → Settings → Database → 複製 Connection String（URI）
+2. **Vercel**：https://vercel.com 用 GitHub 登入 → Add New → Project → Import `cardperks`
+   - Framework Preset：**Other**（其他全預設，不用改）
+   - Environment Variables 加一個：`DATABASE_URL`＝Supabase 的 URI
+   - Deploy → 取得網址
+3. **本機爬蟲寫入雲端**：在 `backend/` 下建 `.env` 檔（內容一行）：
+   ```
+   DATABASE_URL=postgres://...（同上）
+   ```
+   之後每天在本機跑 `python pipeline/daily.py`，資料直接進雲端資料庫（models 會自動讀 .env）。
+   排程：Windows 工作排程器每天 08:00（見 OPS.md）。
+4. 驗證：打開 Vercel 網址，首頁顯示「即時資料」徽章；本機跑完 daily 後雲端資料更新。
+
+注意：`/api/tasks/daily` 在 Vercel 上會回 501（serverless 不支援爬蟲）——這是正常的，排程由本機負責。
+
 ## 費用比較（2026-08，依「能用」程度排序）
 
 | 方案 | 月費 | 適合 | 限制 |

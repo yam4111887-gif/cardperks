@@ -48,10 +48,9 @@ def run():
         # 未選卡時按鈕停用
         check("未選卡時開始鈕停用", page.locator("#obStart[disabled], .btn-w[disabled]").count() >= 1)
 
-        # 選 3 張卡（點擊前 3 個未選的）
-        picks = page.locator(".pick:not(.on)")
-        for i in range(3):
-            picks.nth(i).click()
+        # 選 3 張卡（每輪重繪後清單會變，固定點「當前第一個未選」）
+        for _ in range(3):
+            page.locator(".pick:not(.on)").first.click()
             page.wait_for_timeout(150)
         check("選卡後按鈕啟用並顯示數量", "3 張卡" in (page.locator(".btn-w").last.text_content() or ""))
 
@@ -83,12 +82,12 @@ def run():
         logo = page.locator(".logo small").text_content() or ""
         check("API 即時資料徽章", "即時資料" in logo, f"logo={logo}")
 
-        # ---------- 5. 搜尋：我的卡有優惠的商家（全聯）＋金額計算 ----------
+        # ---------- 5. 搜尋：我的卡有優惠的商家（Coupang，效期到 12/31）＋金額計算 ----------
         page.click('nav button[data-v="search"]')
-        page.fill("input[type=text]", "全聯")
+        page.fill("input[type=text]", "Coupang")
         page.wait_for_timeout(500)
         heads = page.locator(".merchant-head").all_text_contents()
-        check("搜尋全聯命中", any("全聯" in h for h in heads), f"heads={heads}")
+        check("搜尋 Coupang 命中", any("Coupang" in h or "酷澎" in h for h in heads), f"heads={heads}")
 
         rows = page.locator("#view-search .offerrow")
         r1_before = rows.first.text_content() or ""
@@ -110,7 +109,8 @@ def run():
         page.click('header .seg button[data-mode="mine"]')
         page.wait_for_timeout(300)
 
-        # ---------- 7. 地圖 ----------
+        # ---------- 7. 地圖（切全部卡——mine 模式優惠會隨效期波動） ----------
+        page.click('header .seg button[data-mode="all"]')
         page.click('nav button[data-v="map"]')
         page.wait_for_timeout(2500)
         markers = page.locator(".leaflet-marker-icon").count()
