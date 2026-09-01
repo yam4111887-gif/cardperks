@@ -16,6 +16,8 @@ jobs:
     timeout-minutes: 25
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0   # 完整歷史：shallow clone 的 push 會被 GitHub 拒絕
 
       - uses: actions/setup-python@v5
         with:
@@ -38,6 +40,9 @@ jobs:
         run: |
           git config user.name "cardperks-bot"
           git config user.email "bot@users.noreply.github.com"
-          git add -f backend/pipeline/out/ 2>/dev/null || true
+          git pull --rebase origin main
+          git add -f backend/pipeline/out/
+          echo "--- staged 檔案 ---"
+          git diff --cached --name-only
           git commit -m "daily: 爬取＋稽核報告 $(date -u +%F)" || echo "今日無變更"
           git push
