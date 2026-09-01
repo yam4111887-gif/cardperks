@@ -1,0 +1,41 @@
+name: daily-pipeline
+
+# 每天台灣時間 08:00（UTC 00:00）自動：過期下架 → 爬蟲 → 差異報告 → 準確度稽核 → 提交回 repo
+# 也支援手動觸發（Actions 頁面的 Run workflow 按鈕）
+on:
+  schedule:
+    - cron: '0 0 * * *'
+  workflow_dispatch: {}
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: 安裝依賴與爬蟲瀏覽器
+        run: |
+          pip install -r backend/requirements.txt playwright
+          playwright install chromium --with-deps
+
+      - name: 執行每日管線（寫入 Supabase）
+        working-directory: backend
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          LLM_API_KEY: ${{ secrets.LLM_API_KEY }}
+          LLM_PROVIDER: glm
+        run: python pipeline/daily.py
+
+      - name: 提交報告與待審資料回 repo
+        run: |
+          git config user.name "cardperks-bot"
+          git config user.email "bot@users.noreply.github.com"
+          git add -f backend/pipeline/out/diff_report.md backend/pipeline/out/accuracy_report.md \
+                    backend/pipeline/out/pending_offers.jsonl backend/pipeline/out/crawled_items.jsonl 2>/dev/null || true
+          git commit -m "daily: 爬取＋稽核報告 $(date -u +%F)" || echo "今日無變更"
+          git push
