@@ -12,3 +12,4 @@ backend/pipeline/out/
 # 機密（永不上傳）
 .env
 *.pem
+.vercel

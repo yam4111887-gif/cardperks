@@ -1,7 +1,8 @@
-"""Vercel 進入點：把所有請求交給 FastAPI（含靜態原型與 /api/*）
+"""Vercel 進入點（Python serverless）。
 
-Vercel 是 serverless：網站＋API 在這裡跑；
-爬蟲管線（Playwright）不支援 serverless，在本機執行並寫入同一個資料庫（見 DEPLOY.md）。
+⚠️ 2026-09 實測：Vercel Hobby 的 Python runtime 為社群維護，函數調用固定失敗
+（FUNCTION_INVOCATION_FAILED，與 vercel.json 寫法、requirements 位置無關）。
+此檔保留給未來 Vercel 修復時使用；目前正式部署走 Docker（HF Spaces / Render / VPS）。
 """
 import os
 import sys
