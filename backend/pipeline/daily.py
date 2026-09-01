@@ -33,12 +33,17 @@ def read_jsonl(path):
 
 def main():
     print("=== CardPerks 每日資料執行 ===")
-    # 0) 過期優惠自動下架
+    # 0) 資料庫初始化與過期下架（全新資料庫也能跑：建表→種子→匯入→下架）
     sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-    from models import get_engine
-    from seed import expire_offers
+    from models import get_engine, Base
+    from seed import ensure_seed, load_approved, expire_offers
     from sqlalchemy.orm import Session
-    with Session(get_engine()) as db:
+
+    engine = get_engine()
+    Base.metadata.create_all(engine)
+    with Session(engine) as db:
+        ensure_seed(db)          # 空庫時種入示範資料（冪等）
+        load_approved(db)        # 匯入 repo 中已審核的優惠（冪等）
         n = expire_offers(db)
         if n:
             print(f"已下架 {n} 筆過期優惠")
