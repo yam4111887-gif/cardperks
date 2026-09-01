@@ -36,6 +36,7 @@ jobs:
           git config user.name "cardperks-bot"
           git config user.email "bot@users.noreply.github.com"
           git add -f backend/pipeline/out/diff_report.md backend/pipeline/out/accuracy_report.md \
-                    backend/pipeline/out/pending_offers.jsonl backend/pipeline/out/crawled_items.jsonl 2>/dev/null || true
+                    backend/pipeline/out/pending_offers.jsonl backend/pipeline/out/approved_offers.jsonl \
+                    backend/pipeline/out/crawled_items.jsonl 2>/dev/null || true
           git commit -m "daily: 爬取＋稽核報告 $(date -u +%F)" || echo "今日無變更"
           git push
