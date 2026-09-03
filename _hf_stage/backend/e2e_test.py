@@ -12,7 +12,7 @@ import time
 
 from playwright.sync_api import sync_playwright
 
-BASE = "http://localhost:8000/?api=1"  # ?api=1 強制後端模式（完整功能回歸；靜態模式另有快測）
+BASE = "http://localhost:8000/"
 PASSED, FAILED = [], []
 
 

@@ -430,7 +430,6 @@ const REMINDERS = [
 
 // ---------- App 狀態 ----------
 const state = {
-  dataMode: 'demo',   // static（每日 JSON）| api（後端）| demo（內嵌示範）
   // 卡簿存在 localStorage（裝置記憶）；首次使用由引導頁建立
   myCards: (() => {
     try {
@@ -876,9 +875,7 @@ function shareOffer(idx) {
 // ---------- 資料涵蓋範圍（透明度） ----------
 async function coverageSheet() {
   let data = null;
-  try { data = await fetch('web/data/coverage.json').then(r => { if (!r.ok) throw 0; return r.json(); }); } catch (e) {
-    try { data = await fetch((location.protocol.startsWith('http') ? location.origin : '') + '/api/coverage').then(r => r.json()); } catch (e2) {}
-  }
+  try { data = await fetch((location.protocol.startsWith('http') ? location.origin : '') + '/api/coverage').then(r => r.json()); } catch (e) {}
   const rows = data ? data.banks.map(b => `
     <div class="listitem">
       <div style="flex:1"><b>${esc(b.name)}</b></div>
@@ -1181,18 +1178,6 @@ async function syncFromServer() {
 }
 function accountSheet() {
   const email = localStorage.getItem('cp_email') || '';
-  if (state.dataMode !== 'api') {
-    // 純靜態站（無後端）：卡簿存本機，雲端帳號後續版本推出
-    openSheet(`
-      <h3>我的卡簿</h3>
-      <div class="panel" style="margin:8px 0">
-        <div class="cardtitle">${state.myCards.length} 張卡已存在這台裝置</div>
-        <div class="muted" style="margin-top:6px;line-height:1.8">卡簿目前保存在本機（隱私最佳）。<br>跨裝置雲端同步將在 Pro 版推出。</div>
-      </div>
-      <button class="btn gray block" onclick="closeSheet()">關閉</button>
-    `);
-    return;
-  }
   if (localStorage.getItem('cp_token')) {
     openSheet(`
       <h3>我的帳號</h3>
@@ -1269,84 +1254,63 @@ $('#segToggle').addEventListener('click', e => {
 });
 $('#bellBtn').addEventListener('click', bellSheet);
 
-// ---------- 資料載入（三級：web/data 靜態 JSON → /api 後端 → 內嵌示範） ----------
+// ---------- API 資料載入（後端 http 服務時自動換真資料；file:// 或離線時沿用示範資料） ----------
 const API_BASE = location.protocol.startsWith('http') ? location.origin : '';
-
-function applyRemoteData({ cards: cardsR, merchants: merchR, offers: offersItems }, payLabelsNeeded) {
-  const PAY = { any: '不限', line_pay: 'LINE Pay', pi_wallet: 'Pi 拍錢包', tap: '行動支付', other: '限特定支付' };
-  const PALETTE = [
-    ['#475569', '#94a3b8'], ['#b91c1c', '#f87171'], ['#065f46', '#34d399'],
-    ['#7e22ce', '#c084fc'], ['#9a3412', '#fb923c'], ['#0e7490', '#67e8f9'], ['#9d174d', '#f9a8d4'],
-  ];
-  let pi = Object.keys(BANKS).length;
-  CARDS.length = 0;
-  cardsR.forEach(c => {
-    if (!BANKS[c.bank.code]) {
-      BANKS[c.bank.code] = { name: c.bank.name, short: c.bank.short_name, grad: PALETTE[pi++ % PALETTE.length] };
-    }
-    CARDS.push({ id: c.slug, bank: c.bank.code, name: c.name, base: c.base_note || '' });
-  });
-  MERCHANTS.length = 0;
-  merchR.forEach(m => MERCHANTS.push({
-    id: m.slug, name: m.name, cat: m.category, online: m.is_online,
-    alias: ((m.aliases || []).join(' ') + ' ' + m.name).toLowerCase(),
-    locs: (m.locations || []).map(l => ({ n: l.name, lat: l.lat, lng: l.lng })),
-  }));
-  OFFERS.length = 0;
-  offersItems.forEach(o => {
-    if (o.days_left < 0 || !o.merchant) return;
-    OFFERS.push({
-      card: o.card.slug, m: o.merchant.slug, rate: o.reward_rate,
-      rn: o.reward_note || null, cap: o.monthly_cap || 0,
-      login: o.requires_login,
-      pay: payLabelsNeeded ? (PAY[o.pay_channel] || '不限') : (o.pay_channel || '不限'),
-      end: o.ends_on, sd: o.starts_on, note: (o.terms || '').slice(0, 80),
-      full: o.terms || '', source: o.source_url, vd: o.verified_at,
-      bankName: o.card.bank.name, cardName: o.card.name,
-    });
-  });
-  const validSlugs = new Set(CARDS.map(c => c.id));
-  state.myCards = state.myCards.filter(id => validSlugs.has(id));
-}
-
-async function loadStaticData() {  // web/data/*.json（GitHub Actions 每日更新）
-  const [cardsR, merchR, offersR] = await Promise.all([
-    fetch('web/data/cards.json').then(r => { if (!r.ok) throw 0; return r.json(); }),
-    fetch('web/data/merchants.json').then(r => { if (!r.ok) throw 0; return r.json(); }),
-    fetch('web/data/offers.json').then(r => { if (!r.ok) throw 0; return r.json(); }),
-  ]);
-  applyRemoteData({ cards: cardsR, merchants: merchR, offers: offersR }, false);
-  return true;
-}
-
-async function loadApiData() {     // FastAPI 後端（本地開發 / 未來正式後端）
-  if (!API_BASE) return false;
-  const [cardsR, merchR, offersR] = await Promise.all([
-    fetch(API_BASE + '/api/cards').then(r => r.json()),
-    fetch(API_BASE + '/api/merchants').then(r => r.json()),
-    fetch(API_BASE + '/api/offers').then(r => r.json()),
-  ]);
-  applyRemoteData({ cards: cardsR, merchants: merchR, offers: offersR.items }, true);
-  return true;
-}
-
 async function bootFromAPI() {
-  const forceApi = location.search.includes('api=1');  // E2E／開發者用：強制後端模式
-  if (!forceApi) {
-    try { state.dataMode = 'static'; await loadStaticData(); return true; } catch (e) { /* 下一級 */ }
+  if (!API_BASE) return false;
+  try {
+    const [cardsR, merchR, offersR] = await Promise.all([
+      fetch(API_BASE + '/api/cards').then(r => r.json()),
+      fetch(API_BASE + '/api/merchants').then(r => r.json()),
+      fetch(API_BASE + '/api/offers').then(r => r.json()),
+    ]);
+    const PALETTE = [
+      ['#475569', '#94a3b8'], ['#b91c1c', '#f87171'], ['#065f46', '#34d399'],
+      ['#7e22ce', '#c084fc'], ['#9a3412', '#fb923c'], ['#0e7490', '#67e8f9'], ['#9d174d', '#f9a8d4'],
+    ];
+    let pi = Object.keys(BANKS).length;
+    CARDS.length = 0;
+    cardsR.forEach(c => {
+      if (!BANKS[c.bank.code]) {
+        BANKS[c.bank.code] = { name: c.bank.name, short: c.bank.short_name, grad: PALETTE[pi++ % PALETTE.length] };
+      }
+      CARDS.push({ id: c.slug, bank: c.bank.code, name: c.name, base: c.base_note || '' });
+    });
+    MERCHANTS.length = 0;
+    merchR.forEach(m => MERCHANTS.push({
+      id: m.slug, name: m.name, cat: m.category, online: m.is_online,
+      alias: ((m.aliases || []).join(' ') + ' ' + m.name).toLowerCase(),
+      locs: (m.locations || []).map(l => ({ n: l.name, lat: l.lat, lng: l.lng })),
+    }));
+    const PAY = { any: '不限', line_pay: 'LINE Pay', pi_wallet: 'Pi 拍錢包', tap: '行動支付', other: '限特定支付' };
+    OFFERS.length = 0;
+    offersR.items.forEach(o => {
+      if (o.days_left < 0 || !o.merchant) return;
+      OFFERS.push({
+        card: o.card.slug, m: o.merchant.slug, rate: o.reward_rate,
+        rn: o.reward_note || null, cap: o.monthly_cap || 0,
+        login: o.requires_login, pay: PAY[o.pay_channel] || '不限',
+        end: o.ends_on, sd: o.starts_on, note: (o.terms || '').slice(0, 80),
+        full: o.terms || '', source: o.source_url, vd: o.verified_at,
+        bankName: o.card.bank.name, cardName: o.card.name,
+      });
+    });
+    // 卡簿初始值中已不在資料庫的卡自動剔除
+    const validSlugs = new Set(CARDS.map(c => c.id));
+    state.myCards = state.myCards.filter(id => validSlugs.has(id));
+    return true;
+  } catch (e) {
+    console.warn('API 載入失敗，沿用內嵌示範資料', e);
+    return false;
   }
-  try { state.dataMode = 'api'; await loadApiData(); return true; } catch (e) { /* 下一級 */ }
-  state.dataMode = 'demo';
-  return false;
 }
 
 renderAll();
 bootFromAPI().then(async ok => {
   if (ok) {
-    const label = state.dataMode === 'api' ? '即時資料' : '每日更新';
-    document.querySelector('.logo small').innerHTML = `CardPerks <span class="badge-live">${label}</span>`;
+    document.querySelector('.logo small').innerHTML = 'CardPerks <span class="badge-live">即時資料</span>';
   }
-  if (state.dataMode === 'api' && localStorage.getItem('cp_token')) {
+  if (localStorage.getItem('cp_token')) {
     await syncFromServer();  // 已登入 → 拉雲端卡簿
   }
   renderAll();

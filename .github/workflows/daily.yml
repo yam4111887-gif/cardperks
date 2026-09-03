@@ -34,15 +34,17 @@ jobs:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
           LLM_API_KEY: ${{ secrets.LLM_API_KEY }}
           LLM_PROVIDER: glm
-        run: python pipeline/daily.py
+        run: |
+          python pipeline/daily.py
+          python pipeline/export_static.py
 
       - name: 提交報告與待審資料回 repo
         run: |
           git config user.name "cardperks-bot"
           git config user.email "bot@users.noreply.github.com"
           git pull --rebase origin main
-          git add -f backend/pipeline/out/
+          git add web/data backend/pipeline/out/
           echo "--- staged 檔案 ---"
           git diff --cached --name-only
-          git commit -m "daily: 爬取＋稽核報告 $(date -u +%F)" || echo "今日無變更"
+          git commit -m "daily: 爬取＋稽核報告＋靜態資料 $(date -u +%F)" || echo "今日無變更"
           git push
