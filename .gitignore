@@ -13,3 +13,4 @@ backend/pipeline/out/
 .env
 *.pem
 .vercel
+_hf_stage/
