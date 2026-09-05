@@ -7,6 +7,8 @@ on:
     - cron: '0 0 * * *'
     - cron: '0 12 * * *'
   workflow_dispatch: {}
+  repository_dispatch:      # 外部排程服務（cron-job.org 等）經 API 叫醒用，最可靠
+    types: [daily-pipeline]
 
 permissions:
   contents: write   # 讓 cardperks-bot 能把每日報告提交回 repo
