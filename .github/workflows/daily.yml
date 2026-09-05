@@ -46,7 +46,8 @@ jobs:
           git config user.name "cardperks-bot"
           git config user.email "bot@users.noreply.github.com"
           git pull --rebase origin main
-          git add web/data backend/pipeline/out/
+          git add web/data 2>/dev/null || true
+          git add -f backend/pipeline/out/ 2>/dev/null || true
           echo "--- staged 檔案 ---"
           git diff --cached --name-only
           git commit -m "daily: 爬取＋稽核報告＋靜態資料 $(date -u +%F)" || echo "今日無變更"
