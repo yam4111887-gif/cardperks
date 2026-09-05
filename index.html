@@ -615,6 +615,7 @@ function renderCards() {
   }).join('') || '<p class="empty">還沒有卡片——點下方「新增卡片」，<br>或點右上角「？」重新觀看引導</p>';
 
   $('#view-cards').innerHTML = `
+    ${state.staleData ? `<div class="note" style="background:#fffbeb;border-color:#fde68a;color:#92400e">⚠ ${esc(state.staleData)}</div>` : ''}
     <div class="panel">
       <h3>我的卡簿</h3>
       ${quotaHtml}
@@ -1345,6 +1346,14 @@ bootFromAPI().then(async ok => {
   if (ok) {
     const label = state.dataMode === 'api' ? '即時資料' : '每日更新';
     document.querySelector('.logo small').innerHTML = `CardPerks <span class="badge-live">${label}</span>`;
+    // 資料新鮮度檢查：靜態資料超過 2 天未更新 → 顯示警示（爬蟲可能故障）
+    try {
+      const cov = await fetch('web/data/coverage.json').then(r => r.json());
+      const age = (Date.now() - new Date(cov.generated_at + 'T12:00:00+08:00')) / 86400000;
+      if (state.dataMode === 'static' && age > 2) {
+        state.staleData = `資料最近更新：${cov.generated_at}（每日爬蟲可能異常，最新優惠請以銀行官網為準）`;
+      }
+    } catch (e) {}
   }
   if (state.dataMode === 'api' && localStorage.getItem('cp_token')) {
     await syncFromServer();  // 已登入 → 拉雲端卡簿
