@@ -48,8 +48,13 @@ jobs:
           git config user.name "cardperks-bot"
           git config user.email "bot@users.noreply.github.com"
           # 先 commit 本地產出（管線會改寫已追蹤的 web/data，pull 前必須清工作區）
+          # ⚠️ 只提交結構化結果與報告：快照(snapshots)與爬蟲原文(crawled_items)含銀行頁面
+          # 完整內容，repo 已公開，重製文案有著作權風險——留在 runner 本地當日丟棄，不上傳
           git add web/data 2>/dev/null || true
-          git add -f backend/pipeline/out/ 2>/dev/null || true
+          git add -f backend/pipeline/out/diff_report.md \
+                    backend/pipeline/out/accuracy_report.md \
+                    backend/pipeline/out/approved_offers.jsonl \
+                    backend/pipeline/out/pending_offers.jsonl 2>/dev/null || true
           echo "--- staged 檔案 ---"
           git diff --cached --name-only
           git commit -m "daily: 爬取＋稽核報告＋靜態資料 $(date -u +%F)" || echo "今日無變更"

@@ -14,3 +14,5 @@ backend/pipeline/out/
 *.pem
 .vercel
 _hf_stage/
+backend/pipeline/out/snapshots/
+backend/pipeline/out/crawled_items.jsonl
