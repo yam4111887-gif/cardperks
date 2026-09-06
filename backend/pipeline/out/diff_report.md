@@ -1,13 +1,12 @@
 # 每日差異報告
-產出時間：2026-09-05T15:15:54.107944+00:00
+產出時間：2026-09-06T04:03:25.421297+00:00
 
-- 本次爬取連結：31 條
+- 本次爬取連結：30 條
 - 已上架優惠：26 筆
 
 ## 🆕 新活動（24，待解析審核）
 - [國泰世華] 信用卡優惠活動專區｜國泰世華商業銀行 → https://www.cathay-cube.com.tw/cathaybk/personal/event/overview
 - [國泰世華] 蝦皮購物9月iPhone活動 (9/11~9/18) 單筆滿額最高回饋4,000元刷卡金或等值小樹點(信用卡) 2026/09/10 ~ 2026/09/17 → https://www.cathay-cube.com.tw/content/cub-aem-cs/zh-tw/cathaybk/personal/event/overview/credit-card/online-shopping/202609/shopee202609_3.html
-- [國泰世華] Goyard寶麗廣塲歡慶開幕 刷卡滿額享最高4,300元酬賓券 刷CUBE信用卡切樂饗購 再享最高3.3%小樹點(信用卡)回饋 2026/09/04 ~ 2026/11/15 → https://www.cathay-cube.com.tw/content/cub-aem-cs/zh-tw/cathaybk/personal/event/overview/credit-card/shopping/202609/Goyard.html
 - [國泰世華] 【萬事達卡卡友限定】 熱血開跑!奔向東京馬拉松2027 刷萬事達卡消費滿額抽東京馬拉松參賽資格；CUBE萬事達卡友另享消費滿額抽機票萬元折抵金! 2026/09/06 ~ 2026/10/10 → https://www.cathay-cube.com.tw/content/cub-aem-cs/zh-tw/cathaybk/personal/event/overview/credit-card/travel/202608/mastercardtokyomarathon.html
 - [國泰世華] 卡友登錄專區 → https://www.cathaybk.com.tw/promotion
 - [玉山銀行] 玉山歡聚99購物季！最高享5,700元回饋 活動期間：2026/9/1~2026/9/30 了解更多 → https://event.esunbank.com.tw/credit/1100225e/index.html
@@ -26,6 +25,7 @@
 - [永豐銀行] 小蜜豐點數活動 → https://bank.sinopac.com/sinopacBT/personal/article/bee-together/list.html
 - [永豐銀行] 永豐銀行 Bank SinoPac → https://bank.sinopac.com/sinopacBT/personal/credit-card/discount/list.html
 - [永豐銀行] 查詢已登錄活動 → https://bank.sinopac.com/sinopacBT/rwd.html?w=https://mma.sinopac.com/SinoCard/Activity/RegisteredInquiry&m=https://m.sinopac.com/m/SinoCard/Activity/RegisteredInquiry
+- [永豐銀行] IG_永豐信用卡|刷卡享優惠 → https://www.instagram.com/sinopac.card?igsh=bnNhb21xb3lrNW02
 - [聯邦銀行] 聯邦銀行信用卡 → https://card.ubot.com.tw/
 - [聯邦銀行] 國旅卡刷卡優惠(115-117) → https://card.ubot.com.tw/eCard/activity/2026TaiwanTravel/index.htm
 - [聯邦銀行] 一般活動登錄 → https://card.ubot.com.tw/eCard/activity_login/register_activity.aspx
