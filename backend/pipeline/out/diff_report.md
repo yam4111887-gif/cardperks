@@ -1,10 +1,10 @@
 # 每日差異報告
-產出時間：2026-09-11T04:05:23.876680+00:00
+產出時間：2026-09-11T15:24:16.365711+00:00
 
 - 本次爬取連結：30 條
 - 已上架優惠：26 筆
 
-## 🆕 新活動（23，待解析審核）
+## 🆕 新活動（24，待解析審核）
 - [國泰世華] 信用卡優惠活動專區｜國泰世華商業銀行 → https://www.cathay-cube.com.tw/cathaybk/personal/event/overview
 - [國泰世華] momo購物網 iPhone新機預購優惠 (9/11~9/17) 單筆滿額最高享11%小樹點(信用卡)回饋，累積消費滿額再享最高1,800小樹點(信用卡)及1,800mo幣 2026/09/10 ~ 2026/09/16 → https://www.cathay-cube.com.tw/content/cub-aem-cs/zh-tw/cathaybk/personal/event/overview/credit-card/online-shopping/202609/momo202609_3.html
 - [國泰世華] 蝦皮購物9月iPhone活動 (9/11~9/18) 單筆滿額最高回饋4,000元刷卡金或等值小樹點(信用卡) 2026/09/10 ~ 2026/09/17 → https://www.cathay-cube.com.tw/content/cub-aem-cs/zh-tw/cathaybk/personal/event/overview/credit-card/online-shopping/202609/shopee202609_3.html
@@ -25,6 +25,7 @@
 - [永豐銀行] 小蜜豐點數活動 → https://bank.sinopac.com/sinopacBT/personal/article/bee-together/list.html
 - [永豐銀行] 永豐銀行 Bank SinoPac → https://bank.sinopac.com/sinopacBT/personal/credit-card/discount/list.html
 - [永豐銀行] 查詢已登錄活動 → https://bank.sinopac.com/sinopacBT/rwd.html?w=https://mma.sinopac.com/SinoCard/Activity/RegisteredInquiry&m=https://m.sinopac.com/m/SinoCard/Activity/RegisteredInquiry
+- [永豐銀行] IG_永豐信用卡|刷卡享優惠 → https://www.instagram.com/sinopac.card?igsh=bnNhb21xb3lrNW02
 - [聯邦銀行] 聯邦銀行信用卡 → https://card.ubot.com.tw/
 - [聯邦銀行] 國旅卡刷卡優惠(115-117) → https://card.ubot.com.tw/eCard/activity/2026TaiwanTravel/index.htm
 - [聯邦銀行] 一般活動登錄 → https://card.ubot.com.tw/eCard/activity_login/register_activity.aspx
