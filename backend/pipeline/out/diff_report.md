@@ -1,10 +1,10 @@
 # 每日差異報告
-產出時間：2026-09-12T04:08:38.761838+00:00
+產出時間：2026-09-12T14:32:41.332044+00:00
 
-- 本次爬取連結：30 條
+- 本次爬取連結：26 條
 - 已上架優惠：26 筆
 
-## 🆕 新活動（22，待解析審核）
+## 🆕 新活動（19，待解析審核）
 - [國泰世華] 信用卡優惠活動專區｜國泰世華商業銀行 → https://www.cathay-cube.com.tw/cathaybk/personal/event/overview
 - [國泰世華] momo購物網 iPhone新機預購優惠 (9/11~9/17) 單筆滿額最高享11%小樹點(信用卡)回饋，累積消費滿額再享最高1,800小樹點(信用卡)及1,800mo幣 2026/09/10 ~ 2026/09/16 → https://www.cathay-cube.com.tw/content/cub-aem-cs/zh-tw/cathaybk/personal/event/overview/credit-card/online-shopping/202609/momo202609_3.html
 - [國泰世華] 蝦皮購物9月iPhone活動 (9/11~9/18) 單筆滿額最高回饋4,000元刷卡金或等值小樹點(信用卡) 2026/09/10 ~ 2026/09/17 → https://www.cathay-cube.com.tw/content/cub-aem-cs/zh-tw/cathaybk/personal/event/overview/credit-card/online-shopping/202609/shopee202609_3.html
@@ -13,9 +13,6 @@
 - [玉山銀行] 信貸最新優惠 → https://event.esunbank.com.tw/mkt/loan/DG/index.html?newweb
 - [玉山銀行] 刷卡優惠總覽 - 玉山銀行 → https://www.esunbank.com.tw/bank/personal/credit-card/discount/shops
 - [玉山銀行] 玉山Wallet • Gomaji好麻吉優惠登場 滿499折60樂享券＋領Gomaji 200點！ 了解更多 → https://www.esunbank.com/zh-tw/personal/credit-card/discount/shopInfo?sno=8016
-- [遠東商銀] 遠東商銀 → https://www.feib.com.tw/activity?id=1980
-- [遠東商銀] 關係企業員工優惠信貸 → https://www.feib.com.tw/introduce?id=143
-- [遠東商銀] 最新優惠活動 → https://www.feib.com.tw/upload/personalloan/event/PL2/FEIBEVENT.html
 - [台北富邦] 富邦信用卡-一卡在手，盡享優惠樂趣無窮 → https://cardpromote.taipeifubon.com.tw/
 - [台北富邦(旅遊)] 富邦信用卡 - 運動娛樂 → https://cardpromote.taipeifubon.com.tw/promotion/Type?category=B
 - [台北富邦(購物)] 富邦信用卡 - 旅遊探索 → https://cardpromote.taipeifubon.com.tw/promotion/Type?category=C
