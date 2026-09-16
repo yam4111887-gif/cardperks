@@ -1,13 +1,11 @@
 # 每日差異報告
-產出時間：2026-09-15T15:51:21.462626+00:00
+產出時間：2026-09-16T04:20:44.201287+00:00
 
-- 本次爬取連結：30 條
+- 本次爬取連結：28 條
 - 已上架優惠：26 筆
 
-## 🆕 新活動（23，待解析審核）
+## 🆕 新活動（21，待解析審核）
 - [國泰世華] 信用卡優惠活動專區｜國泰世華商業銀行 → https://www.cathay-cube.com.tw/cathaybk/personal/event/overview
-- [國泰世華] momo購物網 iPhone新機預購優惠 (9/11~9/17) 單筆滿額最高享11%小樹點(信用卡)回饋，累積消費滿額再享最高1,800小樹點(信用卡)及1,800mo幣 2026/09/10 ~ 2026/09/16 → https://www.cathay-cube.com.tw/content/cub-aem-cs/zh-tw/cathaybk/personal/event/overview/credit-card/online-shopping/202609/momo202609_3.html
-- [國泰世華] 蝦皮購物9月iPhone活動 (9/11~9/18) 單筆滿額最高回饋4,000元刷卡金或等值小樹點(信用卡) 2026/09/10 ~ 2026/09/17 → https://www.cathay-cube.com.tw/content/cub-aem-cs/zh-tw/cathaybk/personal/event/overview/credit-card/online-shopping/202609/shopee202609_3.html
 - [國泰世華] 卡友登錄專區 → https://www.cathaybk.com.tw/promotion
 - [玉山銀行] 百貨週年慶 刷玉山卡享好禮，開啟「本月推薦」解鎖專屬回饋! 了解更多 → https://event.esunbank.com.tw/credit/1080718de/index.html
 - [玉山銀行] 玉山歡聚99購物季！最高享5,700元回饋 活動期間：2026/9/1~2026/9/30 了解更多 → https://event.esunbank.com.tw/credit/1100225e/index.html
