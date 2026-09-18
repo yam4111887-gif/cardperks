@@ -1,13 +1,13 @@
 # 每日差異報告
-產出時間：2026-09-18T04:11:19.084903+00:00
+產出時間：2026-09-18T15:21:20.901956+00:00
 
 - 本次爬取連結：30 條
 - 已上架優惠：26 筆
 
-## 🆕 新活動（23，待解析審核）
+## 🆕 新活動（24，待解析審核）
 - [國泰世華] 信用卡優惠活動專區｜國泰世華商業銀行 → https://www.cathay-cube.com.tw/cathaybk/personal/event/overview
 - [國泰世華] PChome24h購物 iPhone新機獨家優惠｜刷卡滿額加碼最高1,000P幣回饋 單筆滿額最高享1000P幤回饋，刷CUBE信用卡切換玩數位再享最高3.3%回饋！ 2026/09/17 ~ 2026/09/29 → https://www.cathay-cube.com.tw/content/cub-aem-cs/zh-tw/cathaybk/personal/event/overview/credit-card/online-shopping/202609/pchomeonline202609_4.html
-- [國泰世華] Garden City大巨蛋開幕慶 刷CUBE信用卡最高4.3%回饋 滿額再享最高7,000元電子商品券 2026/09/15 ~ 2026/10/03 → https://www.cathay-cube.com.tw/content/cub-aem-cs/zh-tw/cathaybk/personal/event/overview/credit-card/shopping/202604/sogo2026q2.html
+- [國泰世華] 國泰世華 CUBE 信用卡 & 【期間限定秋日遊】權益加碼由你決定｜國泰世華信用卡優惠活動 快來投票秋日遊【五大藥妝】vs.【人氣愛店】 票選勝出加碼合計最高享5%小樹點(信用卡)回饋！ 2026/09/30 ~ 2026/11/29 → https://www.cathay-cube.com.tw/content/cub-aem-cs/zh-tw/cathaybk/personal/event/overview/credit-card/travel/202610/prejpr202610.html
 - [國泰世華] 卡友登錄專區 → https://www.cathaybk.com.tw/promotion
 - [玉山銀行] 百貨週年慶 刷玉山卡享好禮，開啟「本月推薦」解鎖專屬回饋! 了解更多 → https://event.esunbank.com.tw/credit/1080718de/index.html
 - [玉山銀行] 玉山歡聚99購物季！最高享5,700元回饋 活動期間：2026/9/1~2026/9/30 了解更多 → https://event.esunbank.com.tw/credit/1100225e/index.html
@@ -25,6 +25,7 @@
 - [永豐銀行] 小蜜豐點數活動 → https://bank.sinopac.com/sinopacBT/personal/article/bee-together/list.html
 - [永豐銀行] 永豐銀行 Bank SinoPac → https://bank.sinopac.com/sinopacBT/personal/credit-card/discount/list.html
 - [永豐銀行] 查詢已登錄活動 → https://bank.sinopac.com/sinopacBT/rwd.html?w=https://mma.sinopac.com/SinoCard/Activity/RegisteredInquiry&m=https://m.sinopac.com/m/SinoCard/Activity/RegisteredInquiry
+- [永豐銀行] IG_永豐信用卡|刷卡享優惠 → https://www.instagram.com/sinopac.card?igsh=bnNhb21xb3lrNW02
 - [聯邦銀行] 聯邦銀行信用卡 → https://card.ubot.com.tw/
 - [聯邦銀行] 國旅卡刷卡優惠(115-117) → https://card.ubot.com.tw/eCard/activity/2026TaiwanTravel/index.htm
 - [聯邦銀行] 一般活動登錄 → https://card.ubot.com.tw/eCard/activity_login/register_activity.aspx
