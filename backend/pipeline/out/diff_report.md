@@ -1,5 +1,5 @@
 # 每日差異報告
-產出時間：2026-09-30T05:04:47.688180+00:00
+產出時間：2026-09-30T17:17:06.074685+00:00
 
 - 本次爬取連結：30 條
 - 已上架優惠：26 筆
@@ -10,7 +10,7 @@
 - [國泰世華] CUBE JCB 信用卡 & 星悅航空 Starflyer 專屬優惠｜國泰世華信用卡優惠活動 刷 CUBE JCB 信用卡輸入指定折扣碼 星悅航空官網訂票享最高 1,000 元折扣 2026/10/14 ~ 2027/03/24 → https://www.cathay-cube.com.tw/content/cub-aem-cs/zh-tw/cathaybk/personal/event/overview/credit-card/travel/202609/Starflyer.html
 - [國泰世華] 卡友登錄專區 → https://www.cathaybk.com.tw/promotion
 - [玉山銀行] 百貨週年慶 刷玉山卡享好禮，開啟「本月推薦」解鎖專屬回饋! 了解更多 → https://event.esunbank.com.tw/credit/1080718de/index.html
-- [玉山銀行] 玉山歡聚99購物季！最高享5,700元回饋 活動期間：2026/9/1~2026/9/30 了解更多 → https://event.esunbank.com.tw/credit/1100225e/index.html
+- [玉山銀行] 玉山雙十購物季，最高享5,700元回饋！ 活動期間：2026/10/1~2026/10/31 了解更多 → https://event.esunbank.com.tw/credit/1100225e/index.html
 - [玉山銀行] 信貸最新優惠 → https://event.esunbank.com.tw/mkt/loan/DG/index.html?newweb
 - [玉山銀行] 刷卡優惠總覽 - 玉山銀行 → https://www.esunbank.com.tw/bank/personal/credit-card/discount/shops
 - [遠東商銀] 遠東商銀 → https://www.feib.com.tw/activity?id=1980
