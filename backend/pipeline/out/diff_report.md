@@ -1,10 +1,10 @@
 # 每日差異報告
-產出時間：2026-09-30T17:17:06.074685+00:00
+產出時間：2026-10-01T05:18:26.354859+00:00
 
 - 本次爬取連結：30 條
 - 已上架優惠：26 筆
 
-## 🆕 新活動（24，待解析審核）
+## 🆕 新活動（25，待解析審核）
 - [國泰世華] 信用卡優惠活動專區｜國泰世華商業銀行 → https://www.cathay-cube.com.tw/cathaybk/personal/event/overview
 - [國泰世華] 新光三越卡利HIGH兌換 卡利HIGH活動兌換資料開放阿發線上查詢，立即體驗>> 2026/09/30 ~ 2026/11/07 → https://www.cathay-cube.com.tw/content/cub-aem-cs/zh-tw/cathaybk/personal/event/overview/credit-card/shopping/202509/skmcardlihigh.html
 - [國泰世華] CUBE JCB 信用卡 & 星悅航空 Starflyer 專屬優惠｜國泰世華信用卡優惠活動 刷 CUBE JCB 信用卡輸入指定折扣碼 星悅航空官網訂票享最高 1,000 元折扣 2026/10/14 ~ 2027/03/24 → https://www.cathay-cube.com.tw/content/cub-aem-cs/zh-tw/cathaybk/personal/event/overview/credit-card/travel/202609/Starflyer.html
@@ -22,6 +22,7 @@
 - [台北富邦(購物)] 富邦信用卡 - 旅遊探索 → https://cardpromote.taipeifubon.com.tw/promotion/Type?category=C
 - [滙豐銀行] 刷卡優惠 - 滙豐(台灣) | 台灣 → https://shop.hsbc.com.tw/
 - [滙豐銀行] 每週三  王品集團 餐飲最優 13 %回饋 → https://shop.hsbc.com.tw/preference/?sn=A&c2=4
+- [滙豐銀行] 每週二  易遊網 週二海外訂房滿額 輸入折扣碼現折 500 元 → https://shop.hsbc.com.tw/travel/trip/activity/T000?store_id=T1380000&mid=1
 - [永豐銀行] 小蜜豐點數活動 → https://bank.sinopac.com/sinopacBT/personal/article/bee-together/list.html
 - [永豐銀行] 永豐銀行 Bank SinoPac → https://bank.sinopac.com/sinopacBT/personal/credit-card/discount/list.html
 - [永豐銀行] 查詢已登錄活動 → https://bank.sinopac.com/sinopacBT/rwd.html?w=https://mma.sinopac.com/SinoCard/Activity/RegisteredInquiry&m=https://m.sinopac.com/m/SinoCard/Activity/RegisteredInquiry
@@ -30,7 +31,7 @@
 - [聯邦銀行] 國旅卡刷卡優惠(115-117) → https://card.ubot.com.tw/eCard/activity/2026TaiwanTravel/index.htm
 - [聯邦銀行] 一般活動登錄 → https://card.ubot.com.tw/eCard/activity_login/register_activity.aspx
 
-## ⚠️ 疑似結束（7，待人工確認下架）
+## ⚠️ 疑似結束（8，待人工確認下架）
 - [esun] 玉山 Unicard @ 全台 TWQR／台灣Pay 商店（來源已消失：https://www.esunbank.com/zh-tw/personal/credit-card/discount/shopInfo?sno=8095）
 - [esun] 玉山 Unicard @ 馬可先生麵包坊（來源已消失：https://www.esunbank.com/zh-tw/personal/credit-card/discount/shopInfo?sno=8095）
 - [esun] 玉山 Unicard @ 福容大飯店（來源已消失：https://www.esunbank.com/zh-tw/personal/credit-card/discount/shopInfo?sno=8095）
@@ -38,6 +39,7 @@
 - [cathay] CUBE 卡 @ 開學季指定文具通路（墊腳石/九乘九/金石堂等）（來源已消失：https://www.cathay-cube.com.tw/content/cub-aem-cs/zh-tw/cathaybk/personal/event/）
 - [國泰世華] 國泰世華信用卡（全卡別） @ Coupang 酷澎（來源已消失：https://www.cathay-cube.com.tw/content/cub-aem-cs/zh-tw/cathaybk/personal/event/）
 - [國泰世華] CUBE 卡 @ 桃園捷運（來源已消失：https://www.cathay-cube.com.tw/content/cub-aem-cs/zh-tw/cathaybk/personal/event/）
+- [滙豐銀行] 滙豐信用卡（全卡別） @ 易遊網（來源已消失：https://shop.hsbc.com.tw/travel/trip/activity/T000?store_id=T1290000&mid=1）
 
 ## 下一步
 1. `python pipeline/llm_parse.py`（或人工）解析新活動
