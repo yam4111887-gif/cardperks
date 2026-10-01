@@ -1,13 +1,13 @@
 # 資料準確度稽核報告
-時間：2026-10-01T05:18:26.268934+00:00
+時間：2026-10-01T17:39:09.106823+00:00
 抽樣：6 筆（母體 17 筆附官方來源之上架優惠）
 
-結果：✅ 一致 5 筆 · ⚠️ 待人工 0 筆 · ❌ 疑似失效 1 筆
+結果：✅ 一致 5 筆 · ⚠️ 待人工 1 筆 · ❌ 疑似失效 0 筆
 
 ## 明細
 - ✅ **LINE Pay 信用卡 @ Uber Eats**｜5.0%｜至 2026-12-31｜rate:5.0%、end:2026-12-31
   - 來源：https://www.ctbcbank.com/content/dam/minisite/long/creditcard/LINEPay/store.html
-- ❌ **玉山 Unicard @ 福容大飯店**｜20.0%｜至 2026-12-31｜關鍵事實皆未出現於頁面（疑似已失效）
+- ⚠️ **玉山 Unicard @ 福容大飯店**｜20.0%｜至 2026-12-31｜找到 rate:20.0%；未見 end:2026-12-31（格式改變？）
   - 來源：https://www.esunbank.com/zh-tw/personal/credit-card/discount/shopInfo?sno=8095
 - ✅ **台北富邦信用卡（全卡別） @ 肯德基 KFC**｜0.0%（62折起）｜至 2026-11-30｜note:62折起、end:2026-11-30
   - 來源：https://cardpromote.taipeifubon.com.tw/promotion/Type?category=A
