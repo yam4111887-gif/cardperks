@@ -1,10 +1,10 @@
 # 每日差異報告
-產出時間：2026-10-04T16:08:27.541635+00:00
+產出時間：2026-10-05T05:06:09.576173+00:00
 
 - 本次爬取連結：30 條
 - 已上架優惠：26 筆
 
-## 🆕 新活動（24，待解析審核）
+## 🆕 新活動（25，待解析審核）
 - [國泰世華] 信用卡優惠活動專區｜國泰世華商業銀行 → https://www.cathay-cube.com.tw/cathaybk/personal/event/overview
 - [國泰世華] 新光三越卡利HIGH兌換 卡利HIGH活動兌換資料開放阿發線上查詢，立即體驗>> 2026/09/30 ~ 2026/11/07 → https://www.cathay-cube.com.tw/content/cub-aem-cs/zh-tw/cathaybk/personal/event/overview/credit-card/shopping/202509/skmcardlihigh.html
 - [國泰世華] CUBE JCB 信用卡 & 星悅航空 Starflyer 專屬優惠｜國泰世華信用卡優惠活動 刷 CUBE JCB 信用卡輸入指定折扣碼 星悅航空官網訂票享最高 1,000 元折扣 2026/10/14 ~ 2027/03/24 → https://www.cathay-cube.com.tw/content/cub-aem-cs/zh-tw/cathaybk/personal/event/overview/credit-card/travel/202609/Starflyer.html
@@ -26,6 +26,7 @@
 - [永豐銀行] 小蜜豐點數活動 → https://bank.sinopac.com/sinopacBT/personal/article/bee-together/list.html
 - [永豐銀行] 永豐銀行 Bank SinoPac → https://bank.sinopac.com/sinopacBT/personal/credit-card/discount/list.html
 - [永豐銀行] 查詢已登錄活動 → https://bank.sinopac.com/sinopacBT/rwd.html?w=https://mma.sinopac.com/SinoCard/Activity/RegisteredInquiry&m=https://m.sinopac.com/m/SinoCard/Activity/RegisteredInquiry
+- [永豐銀行] IG_永豐信用卡|刷卡享優惠 → https://www.instagram.com/sinopac.card?igsh=bnNhb21xb3lrNW02
 - [聯邦銀行] 聯邦銀行信用卡 → https://card.ubot.com.tw/
 - [聯邦銀行] 國旅卡刷卡優惠(115-117) → https://card.ubot.com.tw/eCard/activity/2026TaiwanTravel/index.htm
 - [聯邦銀行] 一般活動登錄 → https://card.ubot.com.tw/eCard/activity_login/register_activity.aspx
