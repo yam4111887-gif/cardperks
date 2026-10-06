@@ -1,11 +1,13 @@
 # 每日差異報告
-產出時間：2026-10-05T19:58:54.973981+00:00
+產出時間：2026-10-06T05:53:11.529594+00:00
 
-- 本次爬取連結：28 條
+- 本次爬取連結：30 條
 - 已上架優惠：26 筆
 
-## 🆕 新活動（23，待解析審核）
+## 🆕 新活動（25，待解析審核）
 - [國泰世華] 信用卡優惠活動專區｜國泰世華商業銀行 → https://www.cathay-cube.com.tw/cathaybk/personal/event/overview
+- [國泰世華] 新光三越卡利HIGH兌換 卡利HIGH活動兌換資料開放阿發線上查詢，立即體驗>> 2026/09/30 ~ 2026/11/07 → https://www.cathay-cube.com.tw/content/cub-aem-cs/zh-tw/cathaybk/personal/event/overview/credit-card/shopping/202509/skmcardlihigh.html
+- [國泰世華] CUBE JCB 信用卡 & 星悅航空 Starflyer 專屬優惠｜國泰世華信用卡優惠活動 刷 CUBE JCB 信用卡輸入指定折扣碼 星悅航空官網訂票享最高 1,000 元折扣 2026/10/14 ~ 2027/03/24 → https://www.cathay-cube.com.tw/content/cub-aem-cs/zh-tw/cathaybk/personal/event/overview/credit-card/travel/202609/Starflyer.html
 - [國泰世華] 卡友登錄專區 → https://www.cathaybk.com.tw/promotion
 - [玉山銀行] 百貨週年慶 刷玉山卡享好禮，開啟「本月推薦」解鎖專屬回饋! 了解更多 → https://event.esunbank.com.tw/credit/1080718de/index.html
 - [玉山銀行] 玉山雙十購物季，最高享5,700元回饋！ 活動期間：2026/10/1~2026/10/31 了解更多 → https://event.esunbank.com.tw/credit/1100225e/index.html
