@@ -1,6 +1,6 @@
 # 資料準確度稽核報告
-時間：2026-10-21T17:20:51.111446+00:00
-抽樣：6 筆（母體 22 筆附官方來源之上架優惠）
+時間：2026-10-21T17:32:04.671507+00:00
+抽樣：6 筆（母體 23 筆附官方來源之上架優惠）
 
 結果：✅ 一致 3 筆 · ⚠️ 待人工 2 筆 · ❌ 疑似失效 1 筆
 
@@ -15,8 +15,8 @@
   - 來源：https://www.ctbcbank.com/content/dam/minisite/long/creditcard/LINEPay/store.html
 - ✅ **LINE Pay 信用卡 @ 藏壽司**｜10.0%｜至 2026-12-31｜rate:10.0%、end:2026-12-31
   - 來源：https://www.ctbcbank.com/content/dam/minisite/long/creditcard/LINEPay/store.html
-- ❌ **CUBE 卡 @ PChome 24h**｜13.0%｜至 2026-10-31｜關鍵事實皆未出現於頁面（疑似已失效）
-  - 來源：https://www.cathay-cube.com.tw/content/cub-aem-cs/zh-tw/cathaybk/personal/event/overview/credit-card/online-shopping/202610/pchome202610.html
+- ❌ **玉山銀行信用卡（全卡別） @ 雙十購物季（指定購物平台）**｜0.0%（最高5,700）｜至 2026-10-31｜頁面無內容（可能已下架或改版）
+  - 來源：https://event.esunbank.com.tw/credit/1100225e/index.html
 
 ## 處理原則
 - ❌ 疑似失效 → 人工開來源頁確認，若活動已結束/改版：下架（review/DB 改 status）或更新資料
