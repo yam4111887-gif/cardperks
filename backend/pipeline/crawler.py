@@ -62,6 +62,20 @@ BANK_SOURCES = [
 KEYWORDS = ("優惠", "回饋", "活動", "刷卡", "登錄", "里程", "折扣", "首刷", "滿額", "現折")
 SKIP_URL = ("javascript:", "mailto:", "tel:", "#")
 
+# 資安：只跟進「與來源頁同註冊網域」的連結，防止被入侵的頁面把我們導向任意 URL
+from urllib.parse import urlparse  # noqa: E402
+
+_TW_2LD = (".com.tw", ".co.tw", ".org.tw", ".edu.tw", ".gov.tw", ".net.tw", ".idv.tw")
+
+
+def _registrable(netloc: str) -> str:
+    """取註冊網域：esunbank.com.tw（event.esunbank.com.tw 與 www. 同域）"""
+    host = netloc.split(":")[0].lower()
+    parts = host.split(".")
+    if len(parts) >= 3 and any("." + ".".join(parts[-2:]) in _TW_2LD for _ in [0]):
+        return ".".join(parts[-3:])
+    return ".".join(parts[-2:])
+
 
 def robots_allows(url: str) -> bool:
     """依 RFC 9309 檢查 robots.txt（用 requests 避開 urllib SSL 憑證鏈問題）
@@ -209,8 +223,12 @@ def crawl(banks_filter, link_limit, details_n, dry_run, max_pages=3):
                                   "page_url": src["url"]})
                     print(f"       ↳ 一覽頁模式：主內容＋分頁共 {len(body_text)} 字")
 
-            # 抓前 N 條明細頁文字（供 LLM 解析）
+            # 抓前 N 條明細頁文字（供 LLM 解析）；資安：僅跟進同註冊網域
+            src_domain = _registrable(urlparse(src["url"]).netloc)
             for it in items[:details_n]:
+                if _registrable(urlparse(it["url"]).netloc) != src_domain:
+                    print(f"       ↳ [安全略過] 跨域連結不跟進：{it['url'][:60]}")
+                    continue
                 if it.get("detail_text"):
                     items_all.append(it)
                     continue

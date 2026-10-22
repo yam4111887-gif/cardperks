@@ -28,17 +28,18 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))  # cardperks/
 engine = get_engine()
 Base.metadata.create_all(engine)
 
-# 輕量遷移：既有 SQLite 補新欄位（create_all 不會 ALTER 舊表）
+# 輕量遷移：既有 SQLite 補新欄位（create_all 不會 ALTER 舊表）；PostgreSQL 免（建表即含）
 from sqlalchemy import text  # noqa: E402
-with engine.connect() as conn:
-    cols = [r[1] for r in conn.execute(text("PRAGMA table_info(offers)"))]
-    if "reward_note" not in cols:
-        conn.execute(text("ALTER TABLE offers ADD COLUMN reward_note VARCHAR"))
-    ucols = [r[1] for r in conn.execute(text("PRAGMA table_info(users)"))]
-    for col in ("password_hash", "display_name"):
-        if col not in ucols:
-            conn.execute(text(f"ALTER TABLE users ADD COLUMN {col} VARCHAR"))
-    conn.commit()
+if engine.url.drivername.startswith("sqlite"):
+    with engine.connect() as conn:
+        cols = [r[1] for r in conn.execute(text("PRAGMA table_info(offers)"))]
+        if "reward_note" not in cols:
+            conn.execute(text("ALTER TABLE offers ADD COLUMN reward_note VARCHAR"))
+        ucols = [r[1] for r in conn.execute(text("PRAGMA table_info(users)"))]
+        for col in ("password_hash", "display_name"):
+            if col not in ucols:
+                conn.execute(text(f"ALTER TABLE users ADD COLUMN {col} VARCHAR"))
+        conn.commit()
 
 app = FastAPI(title="CardPerks API", version="0.1.0")
 app.add_middleware(
@@ -401,4 +402,4 @@ app.mount("/", StaticFiles(directory=ROOT, html=True), name="prototype")
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    uvicorn.run(app, host="0.0.0.0", port=int(os.environ.get("PORT", "8000")))

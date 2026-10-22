@@ -3,9 +3,17 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>卡優惠 CardPerks — 互動原型</title>
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<title>卡優惠 CardPerks</title>
+<meta name="description" content="台灣信用卡優惠聚合——輸入商家，立即比較回饋金額與條件。資料每日自動更新自銀行官網，每筆附來源佐證。">
+<meta name="theme-color" content="#4f46e5">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="icon" type="image/png" href="icons/icon-192.png">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha384-sHL9NAb7lN7rfvG5lfHpm643Xkcjzp4jFvuavGOndn6pjVqS6ny56CAt3nsEVT4H" crossorigin="anonymous">
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha384-cxOPjt7s7Iz04uaHJceBmS+qpjv2JkIHNVcuOrM+YHwZOmJGBXI00mdUXEq65HTH" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/fuse.js@7.0.0/dist/fuse.min.js" integrity="sha384-PCSoOZTpbkikBEtd/+uV3WNdc676i9KUf01KOA8CnJotvlx8rRrETbDuwdjqTYvt" crossorigin="anonymous"></script>
 <style>
   :root {
     --ink: #1e293b;
@@ -298,6 +306,7 @@
       <span class="logo">卡優惠<small>CardPerks · 原型</small></span>
       <span class="pro-chip" id="proChip">PRO</span>
       <span class="hd-spacer"></span>
+      <button class="hd-help" id="installBtn" aria-label="安裝 App" style="display:none">📥</button>
       <button class="hd-help" id="userBtn" aria-label="帳號">👤</button>
       <button class="hd-help" id="helpBtn" aria-label="引導">？</button>
       <button class="bell" id="bellBtn" aria-label="提醒"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg><span class="dot"></span></button>
@@ -699,8 +708,17 @@ function renderSearch() {
 
   let targets = MERCHANTS;
   if (state.cat !== '全部') targets = targets.filter(m => m.cat === state.cat);
-  const q = state.query.trim().toLowerCase();
-  if (q) targets = targets.filter(m => (m.name + ' ' + m.alias).toLowerCase().includes(q));
+  const q = state.query.trim();
+  if (q) {
+    if (window.Fuse) {
+      // 模糊搜尋（Fuse.js, Apache-2.0）：容錯「星巴客」「pxmat」等
+      const fuse = new Fuse(targets, { keys: ['name', 'alias'], threshold: 0.42, ignoreLocation: true });
+      targets = fuse.search(q).map(r => r.item);
+    } else {
+      const ql = q.toLowerCase();
+      targets = targets.filter(m => (m.name + ' ' + m.alias).toLowerCase().includes(ql));
+    }
+  }
 
   const groups = targets.map(m => {
     let os = offersOfMerchant(m.id);
@@ -1243,6 +1261,25 @@ async function doLogout() {
   toast('已登出（卡簿保留在本機）');
 }
 $('#userBtn').addEventListener('click', accountSheet);
+
+// ---------- PWA：Service Worker 註冊（僅正式站 https；本地開發不快取干擾）＋安裝按鈕 ----------
+if ('serviceWorker' in navigator && location.protocol === 'https:') {
+  navigator.serviceWorker.register('sw.js').catch(() => {});
+}
+let deferredPrompt = null;
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  deferredPrompt = e;
+  const btn = document.getElementById('installBtn');
+  if (btn) btn.style.display = '';
+});
+document.getElementById('installBtn').addEventListener('click', async () => {
+  if (!deferredPrompt) return;
+  deferredPrompt.prompt();
+  await deferredPrompt.userChoice;
+  deferredPrompt = null;
+  document.getElementById('installBtn').style.display = 'none';
+});
 
 // ---------- 導覽 ----------
 function switchView(v) {
