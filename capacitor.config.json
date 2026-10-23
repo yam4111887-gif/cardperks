@@ -1,0 +1,8 @@
+{
+  "appId": "tw.cardperks.app",
+  "appName": "卡優惠",
+  "webDir": "www",
+  "android": {
+    "allowMixedContent": false
+  }
+}

@@ -1,0 +1,27 @@
+{
+  "name": "cardperks-app",
+  "version": "1.0.0",
+  "description": "CardPerks Android wrapper (Capacitor)",
+  "main": "sw.js",
+  "scripts": {
+    "build:www": "node scripts/build-www.mjs",
+    "sync": "npm run build:www && npx cap sync android"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yam4111887-gif/cardperks.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/yam4111887-gif/cardperks/issues"
+  },
+  "homepage": "https://github.com/yam4111887-gif/cardperks#readme",
+  "devDependencies": {
+    "@capacitor/android": "^7.6.9",
+    "@capacitor/cli": "^7.6.9",
+    "@capacitor/core": "^7.6.9"
+  }
+}

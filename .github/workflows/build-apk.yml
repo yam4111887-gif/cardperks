@@ -1,0 +1,40 @@
+name: build-android
+
+# 手動或 API 觸發：Capacitor 打包 Android debug APK（雲端建置，本機免 Android SDK）
+on:
+  repository_dispatch:
+    types: [build-android]
+  workflow_dispatch: {}
+
+jobs:
+  apk:
+    runs-on: ubuntu-latest   # 預裝 Android SDK
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: 安裝依賴＋同步網頁到 Android 殼
+        run: |
+          npm ci
+          npm run sync
+
+      - name: 建置 debug APK
+        run: |
+          cd android
+          chmod +x gradlew
+          ./gradlew assembleDebug --no-daemon
+
+      - name: 上傳 APK 產物
+        uses: actions/upload-artifact@v4
+        with:
+          name: cardperks-android-apk
+          path: android/app/build/outputs/apk/debug/app-debug.apk

@@ -1262,8 +1262,8 @@ async function doLogout() {
 }
 $('#userBtn').addEventListener('click', accountSheet);
 
-// ---------- PWA：Service Worker 註冊（僅正式站 https；本地開發不快取干擾）＋安裝按鈕 ----------
-if ('serviceWorker' in navigator && location.protocol === 'https:') {
+// ---------- PWA：Service Worker 註冊（僅正式站 https；原生 App 與本地開發不註冊）＋安裝按鈕 ----------
+if ('serviceWorker' in navigator && location.protocol === 'https:' && !IS_NATIVE_APP) {
   navigator.serviceWorker.register('sw.js').catch(() => {});
 }
 let deferredPrompt = null;
@@ -1309,6 +1309,9 @@ $('#bellBtn').addEventListener('click', bellSheet);
 
 // ---------- 資料載入（三級：web/data 靜態 JSON → /api 後端 → 內嵌示範） ----------
 const API_BASE = location.protocol.startsWith('http') ? location.origin : '';
+// 原生 App（Capacitor）：優先抓官網最新資料，離線回退到打包時的內建快取
+const IS_NATIVE_APP = !!window.Capacitor;
+const REMOTE_SITE = 'https://yam4111887-gif.github.io/cardperks/';
 
 function applyRemoteData({ cards: cardsR, merchants: merchR, offers: offersItems }, payLabelsNeeded) {
   const PAY = { any: '不限', line_pay: 'LINE Pay', pi_wallet: 'Pi 拍錢包', tap: '行動支付', other: '限特定支付' };
@@ -1348,13 +1351,19 @@ function applyRemoteData({ cards: cardsR, merchants: merchR, offers: offersItems
 }
 
 async function loadStaticData() {  // web/data/*.json（GitHub Actions 每日更新）
-  const [cardsR, merchR, offersR] = await Promise.all([
-    fetch('web/data/cards.json').then(r => { if (!r.ok) throw 0; return r.json(); }),
-    fetch('web/data/merchants.json').then(r => { if (!r.ok) throw 0; return r.json(); }),
-    fetch('web/data/offers.json').then(r => { if (!r.ok) throw 0; return r.json(); }),
-  ]);
-  applyRemoteData({ cards: cardsR, merchants: merchR, offers: offersR }, false);
-  return true;
+  const bases = IS_NATIVE_APP ? [REMOTE_SITE, './'] : ['./'];
+  for (const base of bases) {
+    try {
+      const [cardsR, merchR, offersR] = await Promise.all([
+        fetch(base + 'web/data/cards.json').then(r => { if (!r.ok) throw 0; return r.json(); }),
+        fetch(base + 'web/data/merchants.json').then(r => { if (!r.ok) throw 0; return r.json(); }),
+        fetch(base + 'web/data/offers.json').then(r => { if (!r.ok) throw 0; return r.json(); }),
+      ]);
+      applyRemoteData({ cards: cardsR, merchants: merchR, offers: offersR }, false);
+      return true;
+    } catch (e) { /* 下一個 base */ }
+  }
+  throw new Error('static data unavailable');
 }
 
 async function loadApiData() {     // FastAPI 後端（本地開發 / 未來正式後端）
