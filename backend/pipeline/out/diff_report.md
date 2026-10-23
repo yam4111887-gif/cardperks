@@ -1,11 +1,10 @@
 # 每日差異報告
-產出時間：2026-10-22T16:13:25.312905+00:00
+產出時間：2026-10-23T04:16:16.249976+00:00
 
-- 本次爬取連結：24 條（噪音過濾 7／已涵蓋 2）
+- 本次爬取連結：22 條（噪音過濾 6／已涵蓋 2）
 - 已上架優惠：32 筆
 
-## 🆕 新活動（4，待審核）
-- [國泰世華] 國泰世華銀行《天母搞什麼鬼18》萬聖節活動 國泰世華邀您歡慶萬聖節，現場免費領取紋身貼紙一起趣味扮裝！出示CUBE信用卡即可領取糖果束口袋，童樂匯權益客戶再享發光戒指！另外還可使用小樹點(信用卡)兌換趣味遊戲及拍立得留念！活動好禮數量有限，換完為止！ 2026/10/25 ~ 2026/10/25 → https://www.cathay-cube.com.tw/content/cub-aem-cs/zh-tw/cathaybk/personal/event/overview/credit-card/entertainment/2026/2026halloween.html
+## 🆕 新活動（3，待審核）
 - [永豐銀行] 小蜜豐點數活動 → https://bank.sinopac.com/sinopacBT/personal/article/bee-together/list.html
 - [聯邦銀行] 聯邦銀行信用卡 → https://card.ubot.com.tw/
 - [聯邦銀行] 國旅卡刷卡優惠(115-117) → https://card.ubot.com.tw/eCard/activity/2026TaiwanTravel/index.htm
