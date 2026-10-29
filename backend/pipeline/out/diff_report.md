@@ -1,10 +1,12 @@
 # 每日差異報告
-產出時間：2026-10-29T05:17:46.147075+00:00
+產出時間：2026-10-29T17:45:05.733748+00:00
 
-- 本次爬取連結：21 條（噪音過濾 5／已涵蓋 2）
+- 本次爬取連結：28 條（噪音過濾 10／已涵蓋 2）
 - 已上架優惠：32 筆
 
-## 🆕 新活動（3，待審核）
+## 🆕 新活動（5，待審核）
+- [國泰世華] 屈臣氏官方網路商店/APP，單筆滿額現折NT$110 單筆消費滿NT$1,200，輸入優惠代碼享現折NT$110優惠 2026/10/31 ~ 2026/11/29 → https://www.cathay-cube.com.tw/content/cub-aem-cs/zh-tw/cathaybk/personal/event/overview/credit-card/shopping/202611/2026-watsons-ec-11.html
+- [國泰世華] 全國電子分期滿額登錄成功最高享5%回饋 分期(限五期以上)滿額登錄成功最高贈4,000元刷卡金 實體門市再加贈全國電子點數1,000點！(限量) 2026/10/31 ~ 2026/11/29 → https://www.cathay-cube.com.tw/content/cub-aem-cs/zh-tw/cathaybk/personal/event/overview/credit-card/shopping/202611/elifemall.html
 - [永豐銀行] 小蜜豐點數活動 → https://bank.sinopac.com/sinopacBT/personal/article/bee-together/list.html
 - [聯邦銀行] 聯邦銀行信用卡 → https://card.ubot.com.tw/
 - [聯邦銀行] 國旅卡刷卡優惠(115-117) → https://card.ubot.com.tw/eCard/activity/2026TaiwanTravel/index.htm
