@@ -45,8 +45,8 @@ jobs:
         env:
           PUSH_URL: https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/yam4111887-gif/cardperks.git
         run: |
-          git config user.name "cardperks-bot"
-          git config user.email "bot@users.noreply.github.com"
+          git config user.name "yam4111887-gif"
+          git config user.email "289591105+yam4111887-gif@users.noreply.github.com"
           # 先 commit 本地產出（管線會改寫已追蹤的 web/data，pull 前必須清工作區）
           # ⚠️ 只提交結構化結果與報告：快照(snapshots)與爬蟲原文(crawled_items)含銀行頁面
           # 完整內容，repo 已公開，重製文案有著作權風險——留在 runner 本地當日丟棄，不上傳
