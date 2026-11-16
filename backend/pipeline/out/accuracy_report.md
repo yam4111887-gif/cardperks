@@ -1,8 +1,8 @@
 # 資料準確度稽核報告
-時間：2026-11-15T18:08:44.304522+00:00
-抽樣：6 筆（母體 20 筆附官方來源之上架優惠）
+時間：2026-11-16T05:52:53.456792+00:00
+抽樣：6 筆（母體 19 筆附官方來源之上架優惠）
 
-結果：✅ 一致 5 筆 · ⚠️ 待人工 1 筆 · ❌ 疑似失效 0 筆
+結果：✅ 一致 4 筆 · ⚠️ 待人工 2 筆 · ❌ 疑似失效 0 筆
 
 ## 明細
 - ✅ **LINE Pay 信用卡 @ Uber Eats**｜5.0%｜至 2026-12-31｜rate:5.0%、end:2026-12-31
@@ -13,8 +13,8 @@
   - 來源：https://www.ctbcbank.com/content/dam/minisite/long/creditcard/LINEPay/store.html
 - ✅ **LINE Pay 信用卡 @ 藏壽司**｜10.0%｜至 2026-12-31｜rate:10.0%、end:2026-12-31
   - 來源：https://www.ctbcbank.com/content/dam/minisite/long/creditcard/LINEPay/store.html
-- ✅ **MaiCoin 聯名卡 @ 全部通路**｜4.5%｜至 2027-04-30｜rate:4.5%、end:2027-04-30
-  - 來源：https://activity.ubot.com.tw/2026MaiCoinCard/index.htm
+- ⚠️ **玉山銀行信用卡（全卡別） @ 百貨週年慶（指定百貨）**｜0.0%（專屬回饋）｜至 2026-12-31｜找到 note:專屬回饋；未見 end:2026-12-31（格式改變？）
+  - 來源：https://www.esunbank.com.tw/bank/personal/credit-card/discount/shops
 - ✅ **LINE Pay 信用卡 @ 星巴克**｜5.0%｜至 2026-12-31｜rate:5.0%、end:2026-12-31
   - 來源：https://www.ctbcbank.com/content/dam/minisite/long/creditcard/LINEPay/store.html
 
