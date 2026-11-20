@@ -1,10 +1,12 @@
 # 每日差異報告
-產出時間：2026-11-19T19:44:21.884602+00:00
+產出時間：2026-11-20T06:44:26.518725+00:00
 
-- 本次爬取連結：26 條（噪音過濾 10／已涵蓋 2）
+- 本次爬取連結：28 條（噪音過濾 10／已涵蓋 2）
 - 已上架優惠：32 筆
 
-## 🆕 新活動（3，待審核）
+## 🆕 新活動（5，待審核）
+- [國泰世華] momo購物網 刷卡優惠   (11/16~11/30) 單筆滿額最高享6%小樹點(信用卡)回饋！ 2026/11/15 ~ 2026/11/29 → https://www.cathay-cube.com.tw/content/cub-aem-cs/zh-tw/cathaybk/personal/event/overview/credit-card/online-shopping/202611/momo202611_3.html
+- [國泰世華] 大全聯超級週年慶刷國泰世華信用卡單筆消費滿額享加碼回饋 大全聯超級週年慶刷國泰世華信用卡單筆消費滿額享加碼回饋 2026/11/19 ~ 2026/12/02 → https://www.cathay-cube.com.tw/content/cub-aem-cs/zh-tw/cathaybk/personal/event/overview/credit-card/shopping/202611/MEGAPXMart_202611.html
 - [永豐銀行] 小蜜豐點數活動 → https://bank.sinopac.com/sinopacBT/personal/article/bee-together/list.html
 - [聯邦銀行] 聯邦銀行信用卡 → https://card.ubot.com.tw/
 - [聯邦銀行] 國旅卡刷卡優惠(115-117) → https://card.ubot.com.tw/eCard/activity/2026TaiwanTravel/index.htm
