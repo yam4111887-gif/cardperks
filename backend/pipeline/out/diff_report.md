@@ -1,11 +1,11 @@
 # 每日差異報告
-產出時間：2026-11-26T20:40:54.509708+00:00
+產出時間：2026-11-27T07:47:46.495044+00:00
 
-- 本次爬取連結：28 條（噪音過濾 10／已涵蓋 2）
+- 本次爬取連結：24 條（噪音過濾 6／已涵蓋 2）
 - 已上架優惠：32 筆
 
 ## 🆕 新活動（5，待審核）
-- [國泰世華] 大全聯超級週年慶刷國泰世華信用卡單筆消費滿額享加碼回饋 大全聯超級週年慶刷國泰世華信用卡單筆消費滿額享加碼回饋 2026/11/19 ~ 2026/12/02 → https://www.cathay-cube.com.tw/content/cub-aem-cs/zh-tw/cathaybk/personal/event/overview/credit-card/shopping/202611/MEGAPXMart_202611.html
+- [國泰世華] CUBE動漫祭X 2026台灣角川感謝祭 CUBE動漫祭X 2026台灣角川感謝祭就刷 CUBE 信用卡 單筆滿額$168贈角川福袋 2026/12/10 ~ 2026/12/13 → https://www.cathay-cube.com.tw/content/cub-aem-cs/zh-tw/cathaybk/personal/event/overview/credit-card/entertainment/2026/KADOKAWA-Festival.html
 - [國泰世華] 屈臣氏官方網路商店/APP，單筆滿額現折NT$110 單筆消費滿NT$1,200，輸入優惠代碼享現折NT$110優惠 2026/11/30 ~ 2026/12/30 → https://www.cathay-cube.com.tw/content/cub-aem-cs/zh-tw/cathaybk/personal/event/overview/credit-card/shopping/202612/2026-watsons-ec-12.html
 - [永豐銀行] 小蜜豐點數活動 → https://bank.sinopac.com/sinopacBT/personal/article/bee-together/list.html
 - [聯邦銀行] 聯邦銀行信用卡 → https://card.ubot.com.tw/
